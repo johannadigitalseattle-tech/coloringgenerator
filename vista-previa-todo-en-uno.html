@@ -1,0 +1,1999 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Coloring Book Prompt Generator · Johanna Digital Seattle</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500..800&family=DM+Sans:opsz,wght@9..40,400..700&display=swap" rel="stylesheet">
+  <style>
+/* =========================================================
+   Coloring Book Prompt Generator — STYLES
+   Idea central: los números de cada sección son contornos
+   "sin colorear" que se rellenan de rosa cuando eliges algo.
+   ========================================================= */
+:root {
+  --blush: #FFF5F8;
+  --paper: #FFFFFF;
+  --pink-soft: #FAD4E4;
+  --pink-mist: #FDEAF2;
+  --pink: #EC4899;
+  --pink-deep: #C8337A;
+  --lavender: #EEE8FB;
+  --lavender-ink: #7B68B5;
+  --plum: #43263F;
+  --muted: #86677F;
+  --line: #F1D9E4;
+  --shadow: 0 1px 2px rgba(120, 40, 90, .06), 0 8px 24px rgba(200, 51, 122, .07);
+  --r-lg: 26px;
+  --r-md: 18px;
+  --r-pill: 999px;
+  --round: "Baloo 2", "Nunito", "Trebuchet MS", system-ui, sans-serif;
+  --mint: #EEFBF5; --mint-line: #CBEEDD; --mint-fill: #BFEBD6; --mint-ink: #2E8B67;
+  --peach: #FFF3EA; --peach-line: #FBDCC6; --peach-fill: #FDD2B5; --peach-ink: #C9622F;
+  --lav: #F6F2FF; --lav-line: #E4DBFA; --lav-fill: #D9CCF7;
+  --sans: "DM Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  box-sizing: border-box;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+*, *::before, *::after { box-sizing: inherit; }
+html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+body {
+  margin: 0; background: var(--blush); color: var(--plum);
+  font-family: var(--sans); font-size: 16px; line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+button, input, textarea { font: inherit; color: inherit; }
+:focus-visible { outline: 3px solid rgba(236, 72, 153, .45); outline-offset: 2px; border-radius: 10px; }
+
+/* ---------- encabezado ---------- */
+.top { background: var(--paper); border-bottom: 1px solid var(--line); }
+.top-inner { max-width: 1240px; margin: 0 auto; padding: 22px 24px; display: flex; gap: 20px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.brand { display: flex; gap: 16px; align-items: center; }
+.brand-art { width: 104px; height: auto; flex: none; overflow: visible; }
+.title { font-family: var(--round); font-weight: 600; font-size: clamp(1.55rem, 1.1rem + 1.6vw, 2.3rem); line-height: 1.1; margin: 0; letter-spacing: -.01em; }
+.spark { font-size: .7em; vertical-align: .25em; }
+.subtitle { margin: 6px 0 0; color: var(--muted); font-size: 1.02rem; }
+.top-actions { display: flex; gap: 10px; align-items: center; }
+
+.lang { display: inline-flex; border: 1px solid var(--line); border-radius: var(--r-pill); padding: 3px; background: var(--blush); cursor: pointer; }
+.lang span { padding: 6px 12px; border-radius: var(--r-pill); font-weight: 600; font-size: .85rem; color: var(--muted); transition: background .2s, color .2s; }
+.lang span.on { background: var(--pink); color: #fff; }
+
+/* ---------- botones ---------- */
+.btn { border: 0; cursor: pointer; border-radius: var(--r-pill); padding: 12px 20px; font-weight: 600; line-height: 1.2; transition: transform .15s ease, background .2s, box-shadow .2s, color .2s; }
+.btn:active { transform: scale(.97); }
+.btn-primary { background: var(--pink) !important; color: #fff; box-shadow: 0 6px 18px rgba(236, 72, 153, .3); }
+.btn-primary:hover { background: var(--pink-deep) !important; }
+.btn-soft { background: var(--pink-mist); color: var(--pink-deep); }
+.btn-soft:hover { background: var(--pink-soft); }
+.btn-ghost { background: var(--lavender); color: var(--lavender-ink); }
+.btn-ghost:hover { background: #E3DAF8; }
+.btn-text { background: transparent; color: var(--muted); padding: 12px 14px; }
+.btn-text:hover { color: var(--pink-deep); }
+.btn-surprise { background: var(--paper); color: var(--plum); border: 1.5px dashed var(--pink); padding: 12px 22px; }
+.btn-surprise:hover { background: var(--pink-mist); }
+
+/* ---------- layout ---------- */
+.layout { max-width: 1240px; margin: 0 auto; padding: 28px 24px 120px; display: grid; grid-template-columns: minmax(0, 1fr) 400px; gap: 28px; align-items: start; }
+.builder { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+.builder-bar { display: flex; gap: 8px; align-items: center; justify-content: space-between; }
+
+.step { background: var(--paper); border: 1px solid var(--line); border-radius: var(--r-lg); padding: 24px 26px 26px; display: grid; grid-template-columns: 64px minmax(0, 1fr); gap: 8px 18px; }
+.num {
+  font-family: var(--round); font-weight: 700;
+  font-size: 2.9rem; line-height: .9; color: transparent;
+  -webkit-text-stroke: 1.6px var(--plum); transition: color .45s ease, -webkit-text-stroke-color .45s ease;
+}
+.step.done .num { color: var(--pink-soft); -webkit-text-stroke-color: var(--pink-deep); }
+.step h2 { font-family: var(--round); font-weight: 600; font-size: 1.35rem; margin: 2px 0 0; line-height: 1.25; }
+.hint { margin: 2px 0 14px; color: var(--muted); }
+.label { margin: 14px 0 6px; font-weight: 600; font-size: .92rem; }
+.step-body > .label:first-of-type { margin-top: 0; }
+.tip { margin: 6px 0 0; font-size: .85rem; color: var(--lavender-ink); }
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0 14px; }
+.grid2 .label, .grid3 .label { margin-top: 0; }
+.grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0 14px; margin-top: 14px; }
+
+.field { width: 100%; border: 1.5px solid var(--line); border-radius: var(--r-md); padding: 12px 16px; background: var(--paper); transition: border-color .2s; }
+.field:focus { border-color: var(--pink); outline: none; }
+.area { resize: vertical; min-height: 110px; line-height: 1.5; }
+.reveal { display: none; margin-top: 12px; }
+.reveal.show { display: block; }
+
+/* segmentado */
+.seg { display: flex; flex-wrap: wrap; gap: 8px; }
+.seg button { border: 1.5px solid var(--line); background: var(--paper); border-radius: var(--r-pill); padding: 9px 16px; cursor: pointer; font-weight: 600; transition: all .2s; }
+.seg button:hover { border-color: var(--pink-soft); }
+.seg button[aria-checked="true"] { background: var(--pink); border-color: var(--pink); color: #fff; }
+
+/* ---------- dropdown con casillas ---------- */
+.dd { position: relative; }
+.dd-trigger { width: 100%; display: flex; align-items: center; gap: 10px; min-height: 52px; padding: 8px 14px 8px 16px; background: var(--paper); border: 1.5px solid var(--line); border-radius: var(--r-md); cursor: pointer; text-align: left; transition: border-color .2s, box-shadow .2s; }
+.dd-trigger:hover { border-color: var(--pink-soft); }
+.dd.open .dd-trigger { border-color: var(--pink); box-shadow: 0 0 0 4px var(--pink-mist); }
+.dd-value { flex: 1; display: flex; flex-wrap: wrap; gap: 6px; min-width: 0; }
+.dd-ph { color: var(--muted); }
+.chip { display: inline-flex; align-items: center; gap: 6px; background: var(--pink-mist); color: var(--pink-deep); border-radius: var(--r-pill); padding: 5px 12px; font-weight: 600; font-size: .9rem; }
+.dd-caret { width: 20px; height: 20px; flex: none; color: var(--muted); transition: transform .2s; }
+.dd.open .dd-caret { transform: rotate(180deg); }
+.dd-panel { position: absolute; z-index: 40; left: 0; right: 0; top: calc(100% + 8px); background: var(--paper); border: 1px solid var(--line); border-radius: var(--r-md); box-shadow: var(--shadow); padding: 8px; display: none; }
+.dd.open .dd-panel { display: block; }
+.dd-search { width: 100%; border: 1.5px solid var(--line); border-radius: 12px; padding: 10px 14px; margin-bottom: 6px; }
+.dd-search:focus { outline: none; border-color: var(--pink); }
+.dd-list { max-height: 300px; overflow-y: auto; overscroll-behavior: contain; }
+.dd-group { position: sticky; top: 0; background: var(--paper); font-size: .8rem; font-weight: 700; color: var(--lavender-ink); padding: 10px 10px 4px; z-index: 1; }
+.dd-opt { display: flex; align-items: center; gap: 12px; padding: 9px 10px; border-radius: 12px; cursor: pointer; user-select: none; }
+.dd-opt:hover, .dd-opt.kb { background: var(--blush); }
+.dd-opt input { position: absolute; opacity: 0; pointer-events: none; }
+.box { width: 20px; height: 20px; border: 1.8px solid #D9B8C9; border-radius: 6px; flex: none; display: grid; place-items: center; transition: all .15s; background: var(--paper); }
+.dd-opt.on .box { background: var(--pink); border-color: var(--pink); }
+.dd-opt.on .box::after { content: ""; width: 10px; height: 6px; border-left: 2.4px solid #fff; border-bottom: 2.4px solid #fff; transform: rotate(-45deg) translate(1px, -1px); }
+.dd-opt.off { opacity: .45; }
+.dd-ico { width: 22px; text-align: center; flex: none; }
+.dd-txt { display: flex; flex-direction: column; min-width: 0; }
+.dd-sub { font-size: .8rem; color: var(--muted); line-height: 1.35; }
+.rec { margin: 10px 0 0; font-size: .88rem; background: var(--lavender); color: var(--lavender-ink); padding: 9px 12px; border-radius: 12px; }
+.dd-foot { display: flex; justify-content: space-between; align-items: center; padding: 6px 4px 2px; border-top: 1px solid var(--line); margin-top: 6px; font-size: .85rem; color: var(--muted); }
+.dd-foot button { background: none; border: 0; color: var(--pink-deep); font-weight: 600; cursor: pointer; padding: 6px 8px; }
+.dd-none { padding: 14px 10px; color: var(--muted); }
+
+/* ---------- casillas de impresión ---------- */
+.checks { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 8px; }
+.check { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border: 1.5px solid var(--line); border-radius: 14px; cursor: pointer; transition: border-color .2s, background .2s; }
+.check input { position: absolute; opacity: 0; pointer-events: none; }
+.check.on { border-color: var(--pink-soft); background: var(--pink-mist); }
+.check.on .box { background: var(--pink); border-color: var(--pink); }
+.check.on .box::after { content: ""; width: 10px; height: 6px; border-left: 2.4px solid #fff; border-bottom: 2.4px solid #fff; transform: rotate(-45deg) translate(1px, -1px); }
+
+/* ---------- resultado: una "hoja" imprimible ---------- */
+.side { position: sticky; top: 20px; display: flex; flex-direction: column; gap: 16px; }
+.sheet { background: var(--paper); border-radius: var(--r-lg); padding: 22px 22px 18px 34px; box-shadow: var(--shadow); position: relative; border: 1px solid var(--line); }
+.sheet::before { content: ""; position: absolute; left: 20px; top: 18px; bottom: 18px; border-left: 2px dotted var(--pink-soft); }
+.sheet-head { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; }
+.sheet h2 { font-family: var(--round); font-weight: 600; font-size: 1.3rem; margin: 0; }
+.live { font-size: .8rem; color: var(--lavender-ink); }
+.prompt-box { margin: 14px 0 10px; min-height: 180px; max-height: 42vh; overflow-y: auto; font-size: .95rem; line-height: 1.65; white-space: pre-wrap; color: var(--plum); }
+.prompt-box.flash { animation: flash .6s ease; }
+@keyframes flash { from { background: var(--pink-mist); } to { background: transparent; } }
+.aspect { margin: 0 0 12px; font-size: .88rem; background: var(--lavender); color: var(--lavender-ink); padding: 9px 12px; border-radius: 12px; }
+.btn-generate { width: 100%; padding: 15px; font-size: 1.02rem; }
+.result-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+.result-actions .btn { padding: 9px 14px; font-size: .88rem; }
+
+.panel { background: var(--paper); border: 1px solid var(--line); border-radius: var(--r-lg); padding: 18px 20px; }
+.panel-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.panel h3 { font-family: var(--round); font-weight: 600; font-size: 1.1rem; margin: 0; }
+.x { border: 0; background: var(--blush); width: 34px; height: 34px; border-radius: 50%; font-size: 1.3rem; cursor: pointer; color: var(--muted); flex: none; }
+.x:hover { color: var(--pink-deep); }
+.var-list, .hist-list, .book-list { list-style: none; margin: 12px 0 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+.var-item, .book-item { border: 1px solid var(--line); border-radius: 16px; padding: 12px 14px; }
+.var-item p, .book-item p { margin: 6px 0 8px; font-size: .88rem; line-height: 1.55; }
+.var-item strong, .book-item strong { font-family: var(--round); font-weight: 600; }
+.mini { background: var(--pink-mist); color: var(--pink-deep); border: 0; border-radius: var(--r-pill); padding: 6px 12px; font-weight: 600; font-size: .82rem; cursor: pointer; margin-right: 4px; }
+.mini:hover { background: var(--pink-soft); }
+.mini.del { background: transparent; color: var(--muted); }
+
+.history summary { list-style: none; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+.history summary::-webkit-details-marker { display: none; }
+.count { background: var(--lavender); color: var(--lavender-ink); font-weight: 700; font-size: .8rem; border-radius: var(--r-pill); padding: 2px 10px; }
+.hist-item { border-bottom: 1px solid var(--line); padding-bottom: 10px; }
+.hist-item:last-child { border-bottom: 0; }
+.hist-item .meta { font-size: .78rem; color: var(--muted); }
+.hist-item .text { font-size: .86rem; margin: 4px 0 6px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.hist-empty { color: var(--muted); font-size: .9rem; margin: 10px 0 0; }
+
+/* ---------- modal libro ---------- */
+.modal { position: fixed; inset: 0; background: rgba(67, 38, 63, .35); z-index: 60; display: flex; justify-content: center; align-items: flex-start; padding: calc(24px + env(safe-area-inset-top, 0px)) 16px 24px; overflow-y: auto; }
+.modal[hidden] { display: none; }
+.modal-card { background: var(--paper); border-radius: var(--r-lg); width: min(860px, 100%); padding: 26px; box-shadow: 0 20px 60px rgba(67, 38, 63, .25); }
+.modal-card h2 { font-family: var(--round); font-weight: 600; font-size: 1.6rem; margin: 0; }
+.modal-card .grid2 { margin-top: 10px; }
+.modal-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 18px; }
+.book-item .pg { color: var(--pink-deep); font-weight: 700; font-size: .82rem; }
+
+/* ---------- toast ---------- */
+.toast { position: fixed; left: 50%; bottom: calc(96px + env(safe-area-inset-bottom, 0px)); transform: translate(-50%, 20px); background: var(--plum); color: #fff; padding: 12px 20px; border-radius: var(--r-pill); font-weight: 600; opacity: 0; pointer-events: none; transition: opacity .25s, transform .25s; z-index: 80; max-width: 90vw; text-align: center; }
+.toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+/* ---------- barra móvil ---------- */
+.mobile-bar { display: none; }
+
+@media (max-width: 1000px) {
+  .layout { grid-template-columns: 1fr; }
+  .side { position: static; }
+  .prompt-box { max-height: none; }
+}
+@media (max-width: 640px) {
+  .top-inner { padding: 16px; }
+  .brand-art { width: 72px; }
+  .layout { padding: 18px 12px 110px; gap: 18px; }
+  .step { grid-template-columns: 1fr; padding: 20px 18px; }
+  .num { font-size: 2.2rem; }
+  .grid2, .grid3 { grid-template-columns: 1fr; }
+  .grid2 > div + div, .grid3 > div + div { margin-top: 14px; }
+  .builder-bar .btn-surprise { display: none; }
+  .mobile-bar { display: flex; gap: 10px; position: fixed; left: 0; right: 0; bottom: 0; z-index: 50; padding: 12px 12px calc(12px + env(safe-area-inset-bottom, 0px)); background: rgba(255, 255, 255, .96); border-top: 1px solid var(--line); }
+  .mobile-bar .btn-primary { flex: 1; }
+  .mobile-bar .sm { padding: 12px 16px; }
+  .modal-card { padding: 20px 16px; }
+  .toast { bottom: calc(90px + env(safe-area-inset-bottom, 0px)); }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition: none !important; animation: none !important; }
+}
+
+
+/* =========================================================
+   VERSIÓN CUTE: tonos pastel, letra redondita, dibujitos,
+   animaciones y mascota
+   ========================================================= */
+.title { font-weight: 800; letter-spacing: 0; }
+.step h2, .sheet h2, .panel h3, .modal-card h2 { font-weight: 700; }
+.num { font-weight: 800; justify-self: start; transform-origin: left center; }
+
+/* cada sección con su crayón pastel */
+.step { --tint: #FFF0F6; --edge: #F8D3E4; --fill: var(--pink-soft); --ink: var(--pink-deep); background: var(--tint); border: 2px solid var(--edge); }
+.step:nth-of-type(4n+2) { --tint: var(--lav); --edge: var(--lav-line); --fill: var(--lav-fill); --ink: var(--lavender-ink); }
+.step:nth-of-type(4n+3) { --tint: var(--mint); --edge: var(--mint-line); --fill: var(--mint-fill); --ink: var(--mint-ink); }
+.step:nth-of-type(4n+4) { --tint: var(--peach); --edge: var(--peach-line); --fill: var(--peach-fill); --ink: var(--peach-ink); }
+.step .num { -webkit-text-stroke-color: var(--ink); }
+.step.done .num { color: var(--fill); -webkit-text-stroke-color: var(--ink); animation: pop .55s ease; }
+@keyframes pop { 0% { transform: scale(1); } 40% { transform: scale(1.28) rotate(-7deg); } 70% { transform: scale(.95) rotate(3deg); } 100% { transform: scale(1); } }
+.step .dd-trigger, .step .field, .step .seg button, .step .check { border-color: var(--edge); }
+.step .check { background: var(--paper); }
+
+/* botones con rebote */
+.btn:hover { transform: translateY(-2px); }
+.btn:active { transform: translateY(0) scale(.96); }
+.btn-surprise { animation: wiggle 6s ease-in-out infinite; }
+.btn-surprise:hover { animation: none; }
+@keyframes wiggle { 0%, 86%, 100% { transform: rotate(0); } 88% { transform: rotate(-5deg); } 90% { transform: rotate(5deg); } 92% { transform: rotate(-4deg); } 94% { transform: rotate(3deg); } 96% { transform: rotate(0); } }
+.spark { display: inline-block; animation: twinkle 1.8s ease-in-out infinite; }
+@keyframes twinkle { 0%, 100% { transform: scale(1) rotate(0); opacity: 1; } 50% { transform: scale(.7) rotate(20deg); opacity: .55; } }
+
+/* dibujitos de fondo */
+.top, .layout { position: relative; z-index: 1; }
+.top { background: rgba(255, 255, 255, .92); }
+.doodles { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+.doodles svg { position: absolute; width: 34px; height: 34px; fill: none; stroke: #F4A9C8; stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; opacity: .75; animation: drift 9s ease-in-out infinite; }
+.doodles svg.wide { width: 46px; }
+.doodles svg.lav { stroke: #B9A6EC; }
+.doodles svg.mint { stroke: #86D2B0; }
+.doodles svg.peach { stroke: #F4B08A; }
+.doodles svg:nth-child(2n) { animation-duration: 11s; animation-delay: -3s; }
+.doodles svg:nth-child(3n) { animation-duration: 13s; animation-delay: -6s; }
+@keyframes drift { 0%, 100% { transform: translateY(0) rotate(0); } 50% { transform: translateY(-16px) rotate(12deg); } }
+
+/* confeti de corazones y estrellas */
+.burst { position: fixed; pointer-events: none; z-index: 95; font-size: 18px; line-height: 1; animation: burst .95s ease-out forwards; }
+@keyframes burst {
+  0% { transform: translate(-50%, -50%) scale(.5); opacity: 1; }
+  100% { transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) rotate(var(--rot)) scale(1.1); opacity: 0; }
+}
+
+/* mascota: las animaciones viven dentro del dibujo (SMIL) */
+.mascot { display: flex; align-items: center; justify-content: center; gap: 14px; margin: 18px 0 10px; }
+.m-svg { width: 96px; height: auto; overflow: visible; flex: none; }
+.bubble { position: relative; order: 2; background: var(--paper); border: 2px solid var(--plum); border-radius: 18px; padding: 10px 16px; font-family: var(--round); font-weight: 600; font-size: 1.02rem; line-height: 1.3; text-align: center; max-width: 210px; }
+.bubble::after { content: ""; position: absolute; left: -9px; top: 50%; width: 14px; height: 14px; background: var(--paper); border-left: 2px solid var(--plum); border-bottom: 2px solid var(--plum); transform: translateY(-50%) rotate(45deg); }
+.done-bubble { display: none; }
+.sheet.empty .prompt-box { display: none; }
+
+/* con prompt: mascota mediana asomándose en la esquina */
+.sheet:not(.empty) { margin-top: 78px; }
+.sheet:not(.empty) .mascot { position: absolute; top: -96px; right: 10px; margin: 0; z-index: 2; gap: 8px; }
+.sheet:not(.empty) .m-svg { width: 84px; }
+.sheet:not(.empty) .bubble { display: none; }
+.sheet:not(.empty) .mascot.says .done-bubble { display: block; order: 0; font-size: .95rem; padding: 6px 12px; white-space: nowrap; }
+.sheet:not(.empty) .mascot.says .done-bubble::after { left: auto; right: -9px; transform: translateY(-50%) rotate(-135deg); }
+.sheet:not(.empty) .sheet-head { padding-right: 96px; }
+.sheet:not(.empty) .live { display: none; }
+.mascot.hop .m-svg { animation: hop .6s ease; }
+@keyframes hop { 0%, 100% { transform: translateY(0); } 35% { transform: translateY(-18px) rotate(-8deg); } 65% { transform: translateY(0) rotate(4deg); } }
+
+@media (max-width: 640px) {
+  .doodles svg { width: 24px; height: 24px; opacity: .5; }
+  .doodles svg.wide { width: 32px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .burst { display: none; }
+}
+
+</style>
+</head>
+<body>
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <symbol id="d-star" viewBox="0 0 32 32"><path d="M16 3l3.6 8.4 9 .8-6.8 6 2 8.8L16 22.4 8.2 27l2-8.8-6.8-6 9-.8z"/></symbol>
+    <symbol id="d-heart" viewBox="0 0 32 32"><path d="M16 27S4 19.5 4 11.5C4 7.4 7 5 10.3 5c2.6 0 4.6 1.6 5.7 3.6C17.1 6.6 19.1 5 21.7 5 25 5 28 7.4 28 11.5 28 19.5 16 27 16 27z"/></symbol>
+    <symbol id="d-flower" viewBox="0 0 32 32"><circle cx="16" cy="16" r="4"/><path d="M16 12c-3-6 3-9 0-9s3 3 0 9zM20 16c6-3 9 3 9 0s-3 3-9 0zM16 20c3 6-3 9 0 9s-3-3 0-9zM12 16c-6 3-9-3-9 0s3-3 9 0z"/></symbol>
+    <symbol id="d-cloud" viewBox="0 0 40 28"><path d="M11 23h19a7 7 0 000-14 9 9 0 00-17-2 7 7 0 00-2 16z"/></symbol>
+    <symbol id="d-spark" viewBox="0 0 32 32"><path d="M16 3l2.5 10.5L29 16l-10.5 2.5L16 29l-2.5-10.5L3 16l10.5-2.5z"/></symbol>
+  </svg>
+  <div class="doodles" aria-hidden="true">
+    <svg style="top:12%;left:2%"><use href="#d-star"/></svg>
+    <svg style="top:30%;left:4%" class="lav"><use href="#d-heart"/></svg>
+    <svg style="top:52%;left:1.5%" class="mint"><use href="#d-flower"/></svg>
+    <svg style="top:74%;left:3.5%" class="peach wide"><use href="#d-cloud"/></svg>
+    <svg style="top:90%;left:1%"><use href="#d-spark"/></svg>
+    <svg style="top:18%;right:2%" class="mint wide"><use href="#d-cloud"/></svg>
+    <svg style="top:40%;right:3%"><use href="#d-flower"/></svg>
+    <svg style="top:60%;right:1.5%" class="peach"><use href="#d-star"/></svg>
+    <svg style="top:80%;right:4%" class="lav"><use href="#d-spark"/></svg>
+    <svg style="top:6%;left:46%" class="lav"><use href="#d-heart"/></svg>
+  </div>
+
+  <header class="top">
+    <div class="top-inner">
+      <div class="brand">
+        <svg class="brand-art" viewBox="258 0 200 246" aria-hidden="true">
+          <path id="hdrDraw" d="M340 118 C306 60 374 60 340 118 C384.7 67.7 405.7 132.4 340 118 C401.6 144.9 346.6 184.9 340 118 C333.4 184.9 278.4 144.9 340 118 C274.3 132.4 295.3 67.7 340 118 M352 118 A12 12 0 1 0 328 118 A12 12 0 1 0 352 118 M340 160 L340 238 M340 212 C320 194 300 198 294 208 C310 220 330 218 340 212" fill="none" stroke="none"/>
+          <g>
+            <animate attributeName="opacity" values="1;1;0" keyTimes="0;0.9;1" dur="7s" repeatCount="indefinite"/>
+            <path d="M340 118 C306 60 374 60 340 118 C384.7 67.7 405.7 132.4 340 118 C401.6 144.9 346.6 184.9 340 118 C333.4 184.9 278.4 144.9 340 118 C274.3 132.4 295.3 67.7 340 118" fill="#FBCFE8" opacity="0"><animate attributeName="opacity" values="0;0;1;1" keyTimes="0;0.57;0.66;1" dur="7s" repeatCount="indefinite"/></path>
+            <path d="M340 212 C320 194 300 198 294 208 C310 220 330 218 340 212" fill="#BFEBD6" opacity="0"><animate attributeName="opacity" values="0;0;1;1" keyTimes="0;0.63;0.72;1" dur="7s" repeatCount="indefinite"/></path>
+            <circle cx="340" cy="118" r="12" fill="#FDD2B5" opacity="0"><animate attributeName="opacity" values="0;0;1;1" keyTimes="0;0.6;0.69;1" dur="7s" repeatCount="indefinite"/></circle>
+            <path d="M340 118 C306 60 374 60 340 118 C384.7 67.7 405.7 132.4 340 118 C401.6 144.9 346.6 184.9 340 118 C333.4 184.9 278.4 144.9 340 118 C274.3 132.4 295.3 67.7 340 118 M352 118 A12 12 0 1 0 328 118 A12 12 0 1 0 352 118 M340 160 L340 238 M340 212 C320 194 300 198 294 208 C310 220 330 218 340 212" fill="none" stroke="#43263F" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" pathLength="100" stroke-dasharray="100" stroke-dashoffset="100"><animate attributeName="stroke-dashoffset" values="100;0;0" keyTimes="0;0.55;1" dur="7s" repeatCount="indefinite"/></path>
+            <g fill="none" stroke="#EC4899" stroke-width="4" stroke-linejoin="round" opacity="0">
+              <animate attributeName="opacity" values="0;0;1;0" keyTimes="0;0.7;0.78;0.9" dur="7s" repeatCount="indefinite"/>
+              <path d="M410 70l3 8 8 3-8 3-3 8-3-8-8-3 8-3z"/>
+              <path d="M268 92l2.5 6.5 6.5 2.5-6.5 2.5-2.5 6.5-2.5-6.5-6.5-2.5 6.5-2.5z" stroke="#9B87D6"/>
+              <path d="M404 178l2.5 6.5 6.5 2.5-6.5 2.5-2.5 6.5-2.5-6.5-6.5-2.5 6.5-2.5z" stroke="#3FAF84"/>
+            </g>
+          </g>
+          <g>
+            <animateMotion dur="7s" repeatCount="indefinite" keyPoints="0;1;1" keyTimes="0;0.55;1" calcMode="linear"><mpath href="#hdrDraw"/></animateMotion>
+            <animate attributeName="opacity" values="1;1;0;0;1" keyTimes="0;0.55;0.6;0.97;1" dur="7s" repeatCount="indefinite"/>
+            <g transform="rotate(35)">
+              <rect x="-6" y="-86" width="12" height="12" rx="4" fill="#F9A8D4" stroke="#43263F" stroke-width="2.5"/>
+              <rect x="-6" y="-75" width="12" height="8" fill="#FFFFFF" stroke="#43263F" stroke-width="2.5"/>
+              <rect x="-6" y="-67" width="12" height="51" fill="#C4B5FD" stroke="#43263F" stroke-width="2.5"/>
+              <path d="M-6 -16 L0 0 L6 -16 Z" fill="#FDE2C4" stroke="#43263F" stroke-width="2.5" stroke-linejoin="round"/>
+              <path d="M-2.3 -6 L0 0 L2.3 -6 Z" fill="#43263F"/>
+            </g>
+          </g>
+        </svg>
+        <div>
+          <h1 class="title">Coloring Book Prompt Generator <span class="spark" aria-hidden="true">✨</span></h1>
+          <p class="subtitle" data-i18n="subtitle"></p>
+        </div>
+      </div>
+      <div class="top-actions">
+        <button class="btn btn-ghost" id="btnBook" type="button" data-i18n="createBook"></button>
+        <button class="lang" id="btnLang" type="button" aria-label="Idioma / Language"><span data-l="es">ES</span><span data-l="en">EN</span></button>
+      </div>
+    </div>
+  </header>
+
+  <main class="layout">
+    <!-- ================= CONSTRUCTOR ================= -->
+    <section class="builder" aria-label="Generator">
+      <div class="builder-bar">
+        <button class="btn btn-surprise" id="btnSurprise" type="button" data-i18n="surprise"></button>
+        <button class="btn btn-text" id="btnReset" type="button" data-i18n="resetAll"></button>
+      </div>
+
+      <article class="step" data-step="style">
+        <div class="num">01</div>
+        <div class="step-body">
+          <h2 data-i18n="s1t"></h2><p class="hint" data-i18n="s1s"></p>
+          <div class="dd" id="dd-style"></div>
+        </div>
+      </article>
+
+      <article class="step" data-step="chars">
+        <div class="num">02</div>
+        <div class="step-body">
+          <h2 data-i18n="s2t"></h2><p class="hint" data-i18n="s2s"></p>
+          <p class="label" data-i18n="count"></p>
+          <div class="seg" id="seg-count" role="radiogroup"></div>
+          <p class="label" data-i18n="charLabel"></p>
+          <div class="dd" id="dd-chars"></div>
+          <div class="reveal" id="wrap-customChar">
+            <label class="label" for="customChar" data-i18n="customCharL"></label>
+            <input class="field" id="customChar" type="text" data-i18n-ph="customCharP">
+            <p class="tip" data-i18n="englishTip"></p>
+          </div>
+        </div>
+      </article>
+
+      <article class="step" data-step="outfit">
+        <div class="num">03</div>
+        <div class="step-body">
+          <h2 data-i18n="s3t"></h2><p class="hint" data-i18n="s3s"></p>
+          <div class="grid2">
+            <div><p class="label" data-i18n="outfitLabel"></p><div class="dd" id="dd-outfit"></div></div>
+            <div><p class="label" data-i18n="detailsLabel"></p><div class="dd" id="dd-details"></div></div>
+          </div>
+          <div class="reveal" id="wrap-customOutfit">
+            <label class="label" for="customOutfit" data-i18n="customOutfitL"></label>
+            <input class="field" id="customOutfit" type="text" data-i18n-ph="customOutfitP">
+          </div>
+        </div>
+      </article>
+
+      <article class="step" data-step="theme">
+        <div class="num">04</div>
+        <div class="step-body">
+          <h2 data-i18n="s4t"></h2><p class="hint" data-i18n="s4s"></p>
+          <div class="dd" id="dd-theme"></div>
+        </div>
+      </article>
+
+      <article class="step" data-step="activity">
+        <div class="num">05</div>
+        <div class="step-body">
+          <h2 data-i18n="s5t"></h2><p class="hint" data-i18n="s5s"></p>
+          <div class="dd" id="dd-activity"></div>
+          <div class="reveal" id="wrap-customActivity">
+            <label class="label" for="customActivity" data-i18n="customActL"></label>
+            <input class="field" id="customActivity" type="text" data-i18n-ph="customActP">
+          </div>
+        </div>
+      </article>
+
+      <article class="step" data-step="comp">
+        <div class="num">06</div>
+        <div class="step-body">
+          <h2 data-i18n="s6t"></h2><p class="hint" data-i18n="s6s"></p>
+          <div class="grid2">
+            <div><p class="label" data-i18n="layoutLabel"></p><div class="dd" id="dd-comp"></div></div>
+            <div><p class="label" data-i18n="extrasLabel"></p><div class="dd" id="dd-compExtras"></div></div>
+          </div>
+        </div>
+      </article>
+
+      <article class="step" data-step="level">
+        <div class="num">07</div>
+        <div class="step-body">
+          <h2 data-i18n="s7t"></h2><p class="hint" data-i18n="s7s"></p>
+          <div class="dd" id="dd-level"></div>
+          <p class="rec" id="rec-level" hidden></p>
+        </div>
+      </article>
+
+      <article class="step" data-step="audience">
+        <div class="num">08</div>
+        <div class="step-body">
+          <h2 data-i18n="s8t"></h2><p class="hint" data-i18n="s8s"></p>
+          <div class="dd" id="dd-audience"></div>
+        </div>
+      </article>
+
+      <article class="step" data-step="format">
+        <div class="num">09</div>
+        <div class="step-body">
+          <h2 data-i18n="s9t"></h2><p class="hint" data-i18n="s9s"></p>
+          <div class="grid2">
+            <div><p class="label" data-i18n="sizeLabel"></p><div class="dd" id="dd-format"></div></div>
+            <div><p class="label" data-i18n="placeLabel"></p><div class="dd" id="dd-layout"></div></div>
+          </div>
+        </div>
+      </article>
+
+      <article class="step" data-step="print">
+        <div class="num">10</div>
+        <div class="step-body">
+          <h2 data-i18n="s10t"></h2><p class="hint" data-i18n="s10s"></p>
+          <div class="checks" id="print-list"></div>
+        </div>
+      </article>
+
+      <article class="step" data-step="custom">
+        <div class="num">11</div>
+        <div class="step-body">
+          <h2 data-i18n="s11t"></h2><p class="hint" data-i18n="s11s"></p>
+          <textarea class="field area" id="custom" rows="4" data-i18n-ph="customP"></textarea>
+          <p class="tip" data-i18n="englishTip"></p>
+        </div>
+      </article>
+    </section>
+
+    <!-- ================= RESULTADO ================= -->
+    <aside class="side">
+      <div class="sheet empty" id="sheet">
+        <div class="sheet-head">
+          <h2 data-i18n="resultTitle"></h2>
+          <span class="live" data-i18n="livePreview"></span>
+        </div>
+        <div class="mascot" id="mascot" aria-hidden="true">
+          <div class="bubble" data-i18n="mascotSay"></div>
+          <div class="bubble done-bubble" data-i18n="mascotDone"></div>
+          <svg class="m-svg" viewBox="250 40 180 330">
+            <ellipse cx="340" cy="362" rx="62" ry="8" fill="#FDEAF2"/>
+            <g class="m-float">
+              <animateTransform attributeName="transform" type="translate" values="0 0;0 -7;0 0" dur="3s" repeatCount="indefinite"/>
+              <rect x="315" y="316" width="13" height="24" rx="6" fill="#FBCFE8" stroke="#43263F" stroke-width="3"/>
+              <rect x="352" y="316" width="13" height="24" rx="6" fill="#FBCFE8" stroke="#43263F" stroke-width="3"/>
+              <ellipse cx="318" cy="342" rx="12" ry="6" fill="#EC4899" stroke="#43263F" stroke-width="3"/>
+              <ellipse cx="362" cy="342" rx="12" ry="6" fill="#EC4899" stroke="#43263F" stroke-width="3"/>
+              <path d="M296 206c-14 8-24 18-28 30" fill="none" stroke="#43263F" stroke-width="3" stroke-linecap="round"/>
+              <circle cx="266" cy="240" r="8" fill="#FBCFE8" stroke="#43263F" stroke-width="3"/>
+              <path d="M302 116l38-68 38 68z" fill="#EC4899" stroke="#43263F" stroke-width="3" stroke-linejoin="round"/>
+              <path d="M327 70l13-22 13 22z" fill="#F9A8D4" stroke="#43263F" stroke-width="3" stroke-linejoin="round"/>
+              <rect x="295" y="112" width="90" height="210" rx="16" fill="#FBCFE8" stroke="#43263F" stroke-width="3"/>
+              <rect x="295" y="244" width="90" height="44" fill="#FFFFFF" stroke="#43263F" stroke-width="3"/>
+              <path d="M298 266l10-9 10 9 10-9 10 9 10-9 10 9 10-9 10 9 4-3" fill="none" stroke="#EC4899" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+              <g class="m-blink"><ellipse cx="322" cy="168" rx="7" ry="7" fill="#43263F"><animate attributeName="ry" values="7;7;1;7;7" keyTimes="0;0.9;0.94;0.98;1" dur="4s" repeatCount="indefinite"/></ellipse><ellipse cx="358" cy="168" rx="7" ry="7" fill="#43263F"><animate attributeName="ry" values="7;7;1;7;7" keyTimes="0;0.9;0.94;0.98;1" dur="4s" repeatCount="indefinite"/></ellipse></g>
+              <g fill="#FFFFFF"><animate attributeName="opacity" values="1;1;0;1;1" keyTimes="0;0.9;0.94;0.98;1" dur="4s" repeatCount="indefinite"/><circle cx="324" cy="165" r="2.2"/><circle cx="360" cy="165" r="2.2"/></g>
+              <ellipse cx="309" cy="190" rx="9" ry="5" fill="#F472B6"/><ellipse cx="371" cy="190" rx="9" ry="5" fill="#F472B6"/>
+              <path d="M329 188q11 13 22 0" fill="none" stroke="#43263F" stroke-width="3" stroke-linecap="round"/>
+              <g class="m-wave">
+                <animateTransform attributeName="transform" type="rotate" values="0 385 200;-20 385 200;0 385 200" dur="1.4s" repeatCount="indefinite"/>
+                <path d="M384 200c14-10 24-26 30-46" fill="none" stroke="#43263F" stroke-width="3" stroke-linecap="round"/>
+                <circle cx="416" cy="148" r="9" fill="#FBCFE8" stroke="#43263F" stroke-width="3"/>
+              </g>
+            </g>
+          </svg>
+        </div>
+        <div class="prompt-box" id="promptBox" tabindex="0" aria-live="polite"></div>
+        <p class="aspect" id="aspectTip" hidden></p>
+        <button class="btn btn-primary btn-generate" id="btnGenerate" type="button" data-i18n="generate"></button>
+        <div class="result-actions">
+          <button class="btn btn-soft" id="btnCopy" type="button" data-i18n="copy"></button>
+          <button class="btn btn-soft" id="btnAgain" type="button" data-i18n="again"></button>
+          <button class="btn btn-soft" id="btnVars" type="button" data-i18n="vars"></button>
+          <button class="btn btn-soft" id="btnSave" type="button" data-i18n="save"></button>
+          <button class="btn btn-text" id="btnClear" type="button" data-i18n="clear"></button>
+        </div>
+      </div>
+
+      <div class="panel" id="varsPanel" hidden>
+        <div class="panel-head"><h3 data-i18n="varsTitle"></h3><button class="x" type="button" data-close="varsPanel" aria-label="Close">×</button></div>
+        <ol class="var-list" id="varList"></ol>
+      </div>
+
+      <details class="panel history" id="historyPanel">
+        <summary><h3 data-i18n="recent"></h3><span class="count" id="histCount">0</span></summary>
+        <ul class="hist-list" id="histList"></ul>
+        <p class="hist-empty" id="histEmpty" data-i18n="histEmpty"></p>
+      </details>
+    </aside>
+  </main>
+
+  <!-- barra fija en móvil -->
+  <div class="mobile-bar">
+    <button class="btn btn-surprise sm" id="btnSurpriseM" type="button" data-i18n="surpriseShort"></button>
+    <button class="btn btn-primary" id="btnGenerateM" type="button" data-i18n="generate"></button>
+  </div>
+
+  <!-- ================= MODO LIBRO ================= -->
+  <div class="modal" id="bookModal" hidden>
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="bookTitle">
+      <div class="panel-head">
+        <h2 id="bookTitle" data-i18n="bookTitle"></h2>
+        <button class="x" type="button" data-close="bookModal" aria-label="Close">×</button>
+      </div>
+      <p class="hint" data-i18n="bookIntro"></p>
+      <div class="grid2">
+        <div><p class="label" data-i18n="bookWorld"></p><div class="dd" id="dd-bWorld"></div></div>
+        <div><p class="label" data-i18n="bookChar"></p><div class="dd" id="dd-bChar"></div></div>
+      </div>
+      <div class="reveal" id="wrap-bCustom">
+        <label class="label" for="bCustomChar" data-i18n="customCharL"></label>
+        <input class="field" id="bCustomChar" type="text" data-i18n-ph="customCharP">
+      </div>
+      <div class="grid3">
+        <div><p class="label" data-i18n="s1t"></p><div class="dd" id="dd-bStyle"></div></div>
+        <div><p class="label" data-i18n="s8t"></p><div class="dd" id="dd-bAudience"></div></div>
+        <div><p class="label" data-i18n="s7t"></p><div class="dd" id="dd-bLevel"></div><p class="rec" id="rec-bLevel" hidden></p></div>
+      </div>
+      <p class="label" data-i18n="bookPages"></p>
+      <div class="seg" id="seg-pages" role="radiogroup"></div>
+      <p class="tip" data-i18n="bookUses"></p>
+      <div class="modal-actions">
+        <button class="btn btn-primary" id="btnBuildBook" type="button" data-i18n="buildBook"></button>
+        <button class="btn btn-soft" id="btnCopyBook" type="button" data-i18n="copyAll" hidden></button>
+      </div>
+      <ol class="book-list" id="bookList"></ol>
+    </div>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script>
+/* =========================================================
+   Coloring Book Prompt Generator — DATA
+   Johanna Digital Seattle
+   Cada opción: id, en (etiqueta inglés), es (etiqueta español),
+   p (fragmento que entra al prompt, SIEMPRE en inglés).
+   Para agregar opciones nuevas, solo añade una línea.
+   ========================================================= */
+(function () {
+  const o = (id, en, es, p, extra) => Object.assign({ id, en, es, p }, extra || {});
+
+  /* ---------- 01 · ESTILO VISUAL (una sola opción) ---------- */
+  const styles = [
+    o('kawaii', 'Kawaii Cute', 'Kawaii tierno', 'cute rounded shapes, simplified proportions, charming kawaii aesthetic', { lead: 'Kawaii', i: '🌸' }),
+    o('cozy', 'Cozy', 'Acogedor', 'warm cozy atmosphere, comforting everyday details, intimate storytelling feel, charming decorative objects', { lead: 'Cozy', i: '☕' }),
+    o('storybook', 'Storybook', 'Cuento ilustrado', 'whimsical storybook illustration style, charming narrative feel, balanced foreground and background details', { lead: 'Storybook-style', i: '📖' }),
+    o('fantasy', 'Fantasy', 'Fantasía', 'enchanting fantasy aesthetic, magical details, wondrous imaginative elements', { lead: 'Fantasy', i: '🔮' }),
+    o('chibi', 'Chibi', 'Chibi', 'chibi proportions with an oversized head and small body, playful expressive pose, super-deformed cute style', { lead: 'Chibi', i: '🧸' }),
+    o('cottagecore', 'Cottagecore', 'Cottagecore', 'rustic countryside aesthetic, wildflowers, nature-inspired decorative details, cozy cottage atmosphere', { lead: 'Cottagecore', i: '🌾' }),
+    o('whimsical', 'Whimsical', 'Caprichoso', 'whimsical playful style, curly flowing lines, delightful imaginative details', { lead: 'Whimsical', i: '🎈' }),
+    o('floral', 'Floral', 'Floral', 'abundant decorative flowers, blossoms and leaves woven through the design, graceful floral ornamentation', { lead: 'Floral', i: '🌷' }),
+    o('botanical', 'Botanical', 'Botánico', 'botanical illustration influence, detailed leaves, stems, petals and plant life, natural organic forms', { lead: 'Botanical', i: '🌿' }),
+    o('doodle', 'Doodle', 'Doodle', 'hand-drawn doodle style, playful sketchy-but-clean shapes, small scattered doodle elements', { lead: 'Doodle-style', i: '✏️' }),
+    o('cartoon', 'Cartoon', 'Caricatura', 'classic cartoon style, bold expressive shapes, friendly exaggerated features', { lead: 'Cartoon', i: '🎨' }),
+    o('vintage', 'Vintage', 'Vintage', 'vintage illustration style, nostalgic old-fashioned details, classic ornamental touches', { lead: 'Vintage', i: '🕰️' }),
+    o('retro', 'Retro', 'Retro', 'retro 70s and 80s inspired style, groovy shapes, nostalgic pop details', { lead: 'Retro', i: '📻' }),
+    o('gothicCute', 'Gothic Cute', 'Gótico tierno', 'cute gothic aesthetic, playful dark decorative elements like bats, moons, roses and little skulls, charming spooky atmosphere', { lead: 'Gothic cute', i: '🦇' }),
+    o('darkCute', 'Dark Cute', 'Oscuro tierno', 'dark cute aesthetic, mysterious yet adorable mood, spooky-sweet details, candles, stars and moons', { lead: 'Dark cute', i: '🌙' }),
+    o('magical', 'Magical', 'Mágico', 'magical atmosphere, sparkles, stars, swirling magic trails and enchanted details', { lead: 'Magical', i: '✨' }),
+    o('fairytale', 'Fairytale', 'Cuento de hadas', 'classic fairytale aesthetic, enchanted storybook charm, castles, crowns and dreamy details', { lead: 'Fairytale', i: '👑' }),
+    o('mandala', 'Mandala', 'Mandala', 'mandala-inspired design, radial symmetry, concentric ornamental patterns integrated into the illustration', { lead: 'Mandala-style', i: '🪷' }),
+    o('zentangle', 'Zentangle', 'Zentangle', 'zentangle-inspired design, structured repetitive patterns filling the shapes, meditative ornamental linework', { lead: 'Zentangle-style', i: '🌀' })
+  ];
+
+  /* ---------- 02 · PERSONAJE ----------
+     k = tipo: human | animal | fantasy | object
+     n = sustantivo en inglés, pl = plural (solo humanos) */
+  const characters = [
+    o('girl', 'Girl', 'Niña', '', { n: 'girl', pl: 'girls', k: 'human', i: '👧' }),
+    o('boy', 'Boy', 'Niño', '', { n: 'boy', pl: 'boys', k: 'human', i: '👦' }),
+    o('woman', 'Woman', 'Mujer', '', { n: 'woman', pl: 'women', k: 'human', i: '👩' }),
+    o('man', 'Man', 'Hombre', '', { n: 'man', pl: 'men', k: 'human', i: '👨' }),
+    o('cat', 'Cat', 'Gato', '', { n: 'cat', k: 'animal', i: '🐱' }),
+    o('dog', 'Dog', 'Perro', '', { n: 'puppy', k: 'animal', i: '🐶' }),
+    o('bunny', 'Bunny', 'Conejito', '', { n: 'bunny', k: 'animal', i: '🐰' }),
+    o('bear', 'Bear', 'Oso', '', { n: 'bear', k: 'animal', i: '🐻' }),
+    o('fox', 'Fox', 'Zorro', '', { n: 'fox', k: 'animal', i: '🦊' }),
+    o('frog', 'Frog', 'Rana', '', { n: 'frog', k: 'animal', i: '🐸' }),
+    o('raccoon', 'Raccoon', 'Mapache', '', { n: 'raccoon', k: 'animal', i: '🦝' }),
+    o('hedgehog', 'Hedgehog', 'Erizo', '', { n: 'hedgehog', k: 'animal', i: '🦔' }),
+    o('capybara', 'Capybara', 'Capibara (chigüire)', '', { n: 'capybara', k: 'animal', i: '🦫' }),
+    o('duck', 'Duck', 'Pato', '', { n: 'duckling', k: 'animal', i: '🦆' }),
+    o('penguin', 'Penguin', 'Pingüino', '', { n: 'penguin', k: 'animal', i: '🐧' }),
+    o('panda', 'Panda', 'Panda', '', { n: 'panda', k: 'animal', i: '🐼' }),
+    o('koala', 'Koala', 'Koala', '', { n: 'koala', k: 'animal', i: '🐨' }),
+    o('sloth', 'Sloth', 'Perezoso', '', { n: 'sloth', k: 'animal', i: '🦥' }),
+    o('deer', 'Deer', 'Venado', '', { n: 'fawn', k: 'animal', i: '🦌' }),
+    o('squirrel', 'Squirrel', 'Ardilla', '', { n: 'squirrel', k: 'animal', i: '🐿️' }),
+    o('otter', 'Otter', 'Nutria', '', { n: 'otter', k: 'animal', i: '🦦' }),
+    o('hamster', 'Hamster', 'Hámster', '', { n: 'hamster', k: 'animal', i: '🐹' }),
+    o('butterfly', 'Butterfly', 'Mariposa', '', { n: 'butterfly', k: 'animal', i: '🦋' }),
+    o('fairy', 'Fairy', 'Hada', '', { n: 'fairy', k: 'fantasy', i: '🧚' }),
+    o('witch', 'Witch', 'Brujita', '', { n: 'little witch', k: 'fantasy', i: '🧙‍♀️' }),
+    o('mermaid', 'Mermaid', 'Sirena', '', { n: 'mermaid', k: 'fantasy', i: '🧜‍♀️' }),
+    o('elf', 'Elf', 'Elfo', '', { n: 'elf', k: 'fantasy', i: '🧝' }),
+    o('princess', 'Princess', 'Princesa', '', { n: 'princess', k: 'fantasy', i: '👸' }),
+    o('angel', 'Angel', 'Ángel', '', { n: 'little angel', k: 'fantasy', i: '😇' }),
+    o('unicorn', 'Unicorn', 'Unicornio', '', { n: 'unicorn', k: 'fantasy', i: '🦄' }),
+    o('dragon', 'Dragon', 'Dragón', '', { n: 'baby dragon', k: 'fantasy', i: '🐉' }),
+    o('phoenix', 'Phoenix', 'Fénix', '', { n: 'phoenix', k: 'fantasy', i: '🔥' }),
+    o('wizard', 'Wizard', 'Mago', '', { n: 'wizard', k: 'fantasy', i: '🧙' }),
+    o('gnome', 'Gnome', 'Gnomo', '', { n: 'garden gnome', k: 'fantasy', i: '🍄' }),
+    o('ghost', 'Ghost', 'Fantasmita', '', { n: 'friendly little ghost', k: 'fantasy', i: '👻' }),
+    o('pumpkin', 'Pumpkin', 'Calabaza', '', { n: 'pumpkin', k: 'object', i: '🎃' }),
+    o('mushroom', 'Mushroom', 'Hongo', '', { n: 'mushroom', k: 'object', i: '🍄' }),
+    o('cupcake', 'Cupcake', 'Cupcake', '', { n: 'cupcake', k: 'object', i: '🧁' }),
+    o('strawberry', 'Strawberry', 'Fresa', '', { n: 'strawberry', k: 'object', i: '🍓' }),
+    o('coffee', 'Coffee', 'Café', '', { n: 'coffee cup', k: 'object', i: '☕' }),
+    o('donut', 'Donut', 'Dona', '', { n: 'donut', k: 'object', i: '🍩' }),
+    o('icecream', 'Ice Cream', 'Helado', '', { n: 'ice cream cone', k: 'object', i: '🍦' }),
+    o('custom', 'Custom Character', 'Personaje personalizado', '', { k: 'custom', i: '✍️' })
+  ];
+
+  /* ---------- 03 · VESTUARIO (una opción) ---------- */
+  const outfits = [
+    o('casual', 'Casual', 'Casual', 'wearing a casual outfit with a comfy t-shirt, jeans and sneakers', { i: '👕' }),
+    o('cozy', 'Cozy', 'Acogedor', 'wearing a cozy outfit with an oversized knit sweater, soft leggings and fluffy socks', { i: '🧶' }),
+    o('princess', 'Princess', 'Princesa', 'wearing an elegant princess gown with a full skirt, puffy sleeves and a small tiara', { i: '👑' }),
+    o('fairy', 'Fairy', 'Hada', 'wearing a petal-shaped fairy dress with delicate wings and a flower crown', { i: '🧚' }),
+    o('royal', 'Royal', 'Realeza', 'wearing a regal royal outfit with a velvet cape, ornate trim and a crown', { i: '🏰' }),
+    o('witch', 'Witch', 'Bruja', 'wearing a cute witch outfit with a pointy hat, a flowing cape and striped stockings', { i: '🧹' }),
+    o('superhero', 'Superhero', 'Superhéroe', 'wearing a playful superhero outfit with a cape, fitted bodysuit, boots, mask and a decorative emblem', { i: '🦸' }),
+    o('school', 'School', 'Escolar', 'wearing a neat school uniform with a collared shirt, a pleated skirt or shorts and a backpack', { i: '🎒' }),
+    o('sports', 'Sports', 'Deportivo', 'wearing a sporty outfit with a jersey, shorts, sneakers and a headband', { i: '⚽' }),
+    o('pajamas', 'Pajamas', 'Pijama', 'wearing cute pajamas with a patterned top, matching pants and fuzzy slippers', { i: '🌙' }),
+    o('professional', 'Professional', 'Profesional', 'wearing a stylish professional outfit with a tailored blazer and smart trousers or skirt', { i: '💼' }),
+    o('fantasy', 'Fantasy', 'Fantasía', 'wearing a fantasy adventurer outfit with a hooded cloak, a belt pouch and tall boots', { i: '🗡️' }),
+    o('vintage', 'Vintage', 'Vintage', 'wearing a vintage outfit with a tea-length dress, a peter pan collar and mary jane shoes', { i: '🎀' }),
+    o('traditional', 'Traditional', 'Tradicional', 'wearing a traditional cultural outfit with decorative embroidered patterns', { i: '🪭' }),
+    o('seasonal', 'Seasonal', 'De temporada', 'wearing a seasonal outfit that matches the time of year, with a scarf and cute accessories', { i: '🍂' }),
+    o('beach', 'Beach', 'Playa', 'wearing a beach outfit with a sun hat, a sundress or swim shorts and sandals', { i: '👒' }),
+    o('travel', 'Travel', 'Viaje', 'wearing a travel outfit with a comfy jacket, a crossbody bag and walking shoes', { i: '🧳' }),
+    o('winter', 'Winter', 'Invierno', 'wearing a warm winter outfit with a puffy coat, a knitted beanie, mittens and boots', { i: '🧤' }),
+    o('custom', 'Custom Outfit', 'Vestuario personalizado', '', { i: '✍️' })
+  ];
+
+  /* ---------- 03b · DETALLES DEL PERSONAJE (varios)
+     g:'pose' = solo una pose a la vez para evitar contradicciones */
+  const details = [
+    o('eyes', 'Big Sparkly Eyes', 'Ojos grandes y brillantes', 'big sparkly eyes', { i: '✨' }),
+    o('smile', 'Cute Smile', 'Sonrisa tierna', 'a sweet happy smile', { i: '😊' }),
+    o('blush', 'Blushing Cheeks', 'Mejillas sonrojadas', 'small blush marks on the cheeks', { i: '☺️' }),
+    o('fullBody', 'Full Body', 'Cuerpo completo', 'full-body character', { i: '🧍' }),
+    o('standing', 'Standing', 'De pie', 'standing pose', { g: 'pose', i: '🧍' }),
+    o('sitting', 'Sitting', 'Sentado', 'sitting pose', { g: 'pose', i: '🪑' }),
+    o('walking', 'Walking', 'Caminando', 'walking pose', { g: 'pose', i: '🚶' }),
+    o('action', 'Action Pose', 'Pose de acción', 'dynamic action pose', { g: 'pose', i: '💫' }),
+    o('holding', 'Holding an Object', 'Sosteniendo un objeto', 'holding {prop}', { i: '🤲' }),
+    o('accessories', 'Cute Accessories', 'Accesorios tiernos', 'cute accessories like a small bow, a tiny bag and a flower pin', { i: '🎀' })
+  ];
+
+  /* ---------- 04 · TEMA (una opción, agrupado)
+     p = entorno; props = objetos del tema */
+  const T = (id, en, es, p, props) => ({ id, en, es, p, props });
+  const themeGroups = [
+    { en: 'Cozy Life', es: 'Vida acogedora', i: '🏡', items: [
+      T('cozyHome', 'Cozy Home', 'Hogar acogedor', 'a cozy home interior with a plush sofa, cushions, potted plants and a warm fireplace', ['a mug of cocoa', 'a knitted blanket', 'a potted plant']),
+      T('readingNook', 'Reading Nook', 'Rincón de lectura', 'a snug reading nook with a window seat, stacked books, fairy lights and pillows', ['an open book', 'a stack of books', 'a teacup']),
+      T('rainyDay', 'Rainy Day', 'Día de lluvia', 'a rainy day scene with raindrops, puddles, a window view and a cozy interior', ['an umbrella', 'rain boots', 'a warm mug']),
+      T('selfCare', 'Self Care', 'Autocuidado', 'a calming self-care corner with candles, a bathtub, towels and skincare jars', ['a face mask jar', 'a candle', 'a fluffy towel']),
+      T('journaling', 'Journaling', 'Journaling', 'a pretty desk setup with notebooks, washi tape, pens and small stickers', ['a journal', 'a pen', 'washi tape']),
+      T('baking', 'Baking', 'Repostería', 'a charming home kitchen with mixing bowls, rolling pins, cookie trays and an oven', ['a mixing bowl', 'a whisk', 'a tray of cookies']),
+      T('cooking', 'Cooking', 'Cocinando', 'a homey kitchen with pots, pans, vegetables and hanging utensils', ['a cooking pot', 'a wooden spoon', 'fresh vegetables']),
+      T('gardening', 'Gardening', 'Jardinería', 'a backyard garden with flower beds, pots, seed packets and a small fence', ['a watering can', 'a flower pot', 'a small shovel']),
+      T('weekendMorning', 'Weekend Morning', 'Mañana de fin de semana', 'a slow weekend morning in a sunny kitchen with pancakes, coffee and fresh flowers', ['a stack of pancakes', 'a coffee cup', 'a flower vase']),
+      T('cleaningDay', 'Cleaning Day', 'Día de limpieza', 'a tidy home on cleaning day with a broom, buckets, spray bottles and folded laundry', ['a broom', 'a feather duster', 'a laundry basket']),
+      T('craftRoom', 'Craft Room', 'Cuarto de manualidades', 'a craft room with shelves of yarn, fabric, scissors, ribbons and a sewing machine', ['a ball of yarn', 'scissors', 'a spool of ribbon']),
+      T('bedroom', 'Bedroom', 'Habitación', 'a cozy bedroom with a fluffy bed, pillows, a nightstand lamp and wall shelves', ['a plush toy', 'a pillow', 'a bedside lamp']),
+      T('cozyKitchen', 'Cozy Kitchen', 'Cocina acogedora', 'a cozy cottage kitchen with open shelves, jars, hanging herbs and a kettle', ['a kettle', 'a jar of cookies', 'a teapot'])
+    ]},
+    { en: 'Food & Drink', es: 'Comida y bebida', i: '🧁', items: [
+      T('coffee', 'Coffee', 'Café', 'a coffee corner with a coffee machine, cups, beans and pastries', ['a latte cup', 'a coffee bean bag', 'a croissant']),
+      T('coffeeShop', 'Coffee Shop', 'Cafetería', 'a charming coffee shop with a counter, pastry display, hanging plants and small round tables', ['a latte cup', 'a slice of cake', 'a croissant']),
+      T('teaParty', 'Tea Party', 'Fiesta de té', 'an elegant garden tea party with a table set with a teapot, teacups, tiered cake stands and flowers', ['a teacup', 'a teapot', 'a macaron']),
+      T('bakery', 'Bakery', 'Panadería', 'a sweet bakery with shelves of bread, cakes, cupcakes and a glass display case', ['a cupcake', 'a loaf of bread', 'a cake box']),
+      T('desserts', 'Desserts', 'Postres', 'a dessert table full of cakes, cupcakes, macarons, donuts and parfaits', ['a slice of cake', 'a donut', 'a cupcake']),
+      T('brunch', 'Brunch', 'Brunch', 'a brunch table with waffles, fruit bowls, juice glasses and a flower vase', ['a waffle plate', 'a glass of juice', 'a fruit bowl']),
+      T('picnic', 'Picnic', 'Picnic', 'a picnic in a sunny park with a checkered blanket, a basket, sandwiches and fruit', ['a picnic basket', 'a sandwich', 'a lemonade jar']),
+      T('farmersMarket', "Farmers Market", 'Mercado de agricultores', 'a farmers market with wooden stalls, baskets of fruit and vegetables and striped awnings', ['a basket of apples', 'a tote bag', 'a bunch of flowers']),
+      T('cookingFood', 'Cooking', 'Cocina', 'a bright kitchen with a stove, bubbling pots, cutting boards and fresh ingredients', ['a frying pan', 'a chef hat', 'a cutting board']),
+      T('iceCreamShop', 'Ice Cream Shop', 'Heladería', 'a retro ice cream shop with tubs of ice cream, waffle cones, sundaes and a counter', ['an ice cream cone', 'a sundae', 'a milkshake']),
+      T('candyShop', 'Candy Shop', 'Tienda de dulces', 'a candy shop with jars of sweets, lollipops, gumball machines and swirly candies', ['a lollipop', 'a candy jar', 'a gumball machine'])
+    ]},
+    { en: 'Nature', es: 'Naturaleza', i: '🌿', items: [
+      T('flowerGarden', 'Flower Garden', 'Jardín de flores', 'a blooming flower garden with roses, tulips, daisies and winding paths', ['a watering can', 'a bouquet', 'a flower basket']),
+      T('wildflowers', 'Wildflowers', 'Flores silvestres', 'a meadow of wildflowers with tall grass, daisies, poppies and butterflies', ['a flower bouquet', 'a daisy', 'a butterfly']),
+      T('botanicalGarden', 'Botanical Garden', 'Jardín botánico', 'a botanical garden with a glass greenhouse, exotic plants and large leaves', ['a potted fern', 'a plant mister', 'a leaf']),
+      T('forest', 'Forest', 'Bosque', 'a peaceful forest with tall trees, ferns, rocks and a small stream', ['a pinecone', 'a lantern', 'a small backpack']),
+      T('enchantedForest', 'Enchanted Forest', 'Bosque encantado', 'an enchanted forest with twisting trees, glowing mushrooms, fireflies and tiny fairy doors', ['a glowing mushroom', 'a lantern', 'a magic wand']),
+      T('mushroomVillage', 'Mushroom Village', 'Aldea de hongos', 'a tiny mushroom village with mushroom houses, round doors, winding paths and flowers', ['a mushroom', 'a tiny lantern', 'an acorn']),
+      T('woodland', 'Woodland', 'Bosque de animalitos', 'a woodland clearing with oak trees, acorns, logs and friendly forest animals', ['an acorn', 'a basket of berries', 'a leaf']),
+      T('tropicalGarden', 'Tropical Garden', 'Jardín tropical', 'a tropical garden with palm leaves, hibiscus flowers, monstera plants and birds', ['a hibiscus flower', 'a coconut drink', 'a palm leaf']),
+      T('butterflyGarden', 'Butterfly Garden', 'Jardín de mariposas', 'a butterfly garden full of flowers with many butterflies fluttering around', ['a butterfly', 'a flower', 'a butterfly net']),
+      T('cottageGarden', 'Cottage Garden', 'Jardín de cabaña', 'a cottage garden with a stone cottage, climbing roses, a picket fence and herb beds', ['a watering can', 'a basket of flowers', 'a garden trowel'])
+    ]},
+    { en: 'Travel', es: 'Viajes', i: '✈️', items: [
+      T('adventure', 'Adventure', 'Aventura', 'a cheerful adventure landscape with mountains, clouds, trees, a winding trail and small decorative elements', ['a map', 'a compass', 'a backpack']),
+      T('beachVacation', 'Beach Vacation', 'Vacaciones en la playa', 'a sunny beach with waves, palm trees, seashells, a beach umbrella and sandcastles', ['a seashell', 'a beach ball', 'a bucket and spade']),
+      T('roadTrip', 'Road Trip', 'Viaje en carretera', 'a road trip scene with a vintage car, winding roads, hills and road signs without text', ['a road map', 'a suitcase', 'a snack bag']),
+      T('camping', 'Camping', 'Campamento', 'a campsite with a tent, campfire, pine trees and a starry sky', ['a marshmallow stick', 'a lantern', 'a sleeping bag']),
+      T('tropicalIsland', 'Tropical Island', 'Isla tropical', 'a tropical island with palm trees, a hammock, gentle waves and a small hut', ['a coconut', 'a flower lei', 'a snorkel mask']),
+      T('europeanVillage', 'European Village', 'Pueblo europeo', 'a charming European village with cobblestone streets, flower boxes and little cafés', ['a baguette', 'a bicycle', 'a flower box']),
+      T('mountainAdventure', 'Mountain Adventure', 'Aventura en la montaña', 'a mountain landscape with peaks, pine trees, a trail and a flowing river', ['a hiking stick', 'a backpack', 'binoculars']),
+      T('airport', 'Airport Adventure', 'Aventura en el aeropuerto', 'a bright airport terminal with big windows, airplanes outside, suitcases and seats', ['a suitcase', 'a passport', 'a neck pillow']),
+      T('travelPacking', 'Travel Packing', 'Haciendo maletas', 'a bedroom packing scene with an open suitcase, folded clothes, shoes and travel items', ['a suitcase', 'a sun hat', 'a camera']),
+      T('worldTravel', 'World Travel', 'Viaje por el mundo', 'a world travel scene with a globe, famous landmarks in the background and a hot air balloon', ['a globe', 'a camera', 'a suitcase']),
+      T('vacation', 'Vacation', 'Vacaciones', 'a relaxing vacation resort with a pool, lounge chairs, umbrellas and palm trees', ['a tropical drink', 'sunglasses', 'a pool float'])
+    ]},
+    { en: 'Magical', es: 'Mágico', i: '🔮', items: [
+      T('magicShop', 'Magic Shop', 'Tienda mágica', 'a whimsical magic shop with shelves of potion bottles, spell books, crystals and hanging lanterns', ['a potion bottle', 'a crystal', 'a spell book']),
+      T('potionRoom', 'Potion Room', 'Cuarto de pociones', 'a potion room with a bubbling cauldron, glass bottles, hanging herbs and swirling magical steam', ['a potion bottle', 'a wooden ladle', 'a spell book']),
+      T('enchantedCastle', 'Enchanted Castle', 'Castillo encantado', 'an enchanted castle with tall towers, flags, a drawbridge and magical sparkles', ['a crown', 'a scroll', 'a lantern']),
+      T('fairyVillage', 'Fairy Village', 'Aldea de hadas', 'a fairy village with flower houses, tiny doors, mushroom stools and glowing lanterns', ['a flower cup', 'a magic wand', 'a tiny lantern']),
+      T('wizardLibrary', 'Wizard Library', 'Biblioteca de magos', 'a wizard library with towering bookshelves, floating books, candles and a telescope', ['a spell book', 'a magic wand', 'a candle']),
+      T('dragonKingdom', 'Dragon Kingdom', 'Reino de dragones', 'a dragon kingdom with rocky cliffs, a castle, dragon eggs and treasure', ['a dragon egg', 'a treasure chest', 'a shield']),
+      T('magicalGarden', 'Magical Garden', 'Jardín mágico', 'a magical garden with glowing flowers, sparkles, crystal stones and floating petals', ['a glowing flower', 'a crystal', 'a magic wand']),
+      T('moonlitForest', 'Moonlit Forest', 'Bosque a la luz de la luna', 'a moonlit forest with a big full moon, stars, owls and fireflies', ['a lantern', 'a star', 'a moon charm'])
+    ]},
+    { en: 'Seasonal', es: 'Temporadas', i: '🍂', items: [
+      T('spring', 'Spring', 'Primavera', 'a spring scene with blooming flowers, cherry blossoms, butterflies and baby birds', ['a flower bouquet', 'an umbrella', 'a watering can']),
+      T('summer', 'Summer', 'Verano', 'a summer scene with a bright sun, ice pops, a pool, flowers and sunglasses', ['an ice pop', 'a sun hat', 'a watermelon slice']),
+      T('autumn', 'Autumn', 'Otoño', 'an autumn scene with falling leaves, pumpkins, apple trees and cozy scarves', ['a pumpkin', 'a mug of cider', 'a leaf']),
+      T('winter', 'Winter', 'Invierno', 'a winter scene with snowflakes, snowy trees, a snowman and a cozy cabin', ['a hot cocoa mug', 'a snowball', 'a scarf']),
+      T('christmas', 'Christmas', 'Navidad', 'a Christmas scene with a decorated tree, wrapped gifts, stockings and twinkling lights', ['a wrapped gift', 'a candy cane', 'a gingerbread cookie']),
+      T('halloween', 'Halloween', 'Halloween', 'a cute Halloween scene with jack-o-lanterns, friendly ghosts, bats and a spooky house', ['a jack-o-lantern', 'a candy bucket', 'a witch hat']),
+      T('valentines', "Valentine's Day", 'San Valentín', "a Valentine's Day scene with hearts, roses, love letters and heart balloons", ['a heart balloon', 'a rose', 'a box of chocolates']),
+      T('easter', 'Easter', 'Pascua', 'an Easter scene with decorated eggs, spring flowers, baskets and little chicks', ['an Easter egg', 'an Easter basket', 'a carrot'])
+    ]},
+    { en: 'Lifestyle', es: 'Estilo de vida', i: '💼', items: [
+      T('artist', 'Artist', 'Artista', "an artist's studio with easels, canvases, paint jars and brushes", ['a paintbrush', 'a palette', 'a sketchbook']),
+      T('baker', 'Baker', 'Pastelera', 'a professional bakery kitchen with ovens, trays of pastries and flour sacks', ['a rolling pin', 'a cake', 'a piping bag']),
+      T('teacher', 'Teacher', 'Maestra', 'a cheerful classroom with desks, a blank chalkboard, books and an apple', ['an apple', 'a stack of books', 'a pencil']),
+      T('gardener', 'Gardener', 'Jardinera', 'a greenhouse garden with seedlings, pots, tools and climbing plants', ['a watering can', 'a seedling pot', 'gardening gloves']),
+      T('bookLover', 'Book Lover', 'Amante de los libros', 'a cozy bookstore corner with tall shelves, an armchair and piles of books', ['a book', 'a bookmark', 'a teacup']),
+      T('entrepreneur', 'Entrepreneur', 'Emprendedora', 'a stylish home office with a laptop, planner, coffee cup, plants and shipping boxes', ['a laptop', 'a planner', 'a coffee cup']),
+      T('photographer', 'Photographer', 'Fotógrafa', 'a photo studio with cameras, lights, a backdrop and photo prints', ['a camera', 'a tripod', 'a photo print']),
+      T('hairStylist', 'Hair Stylist', 'Estilista', 'a chic hair salon with a styling chair, mirror, brushes and hair dryer', ['a hair dryer', 'a comb', 'scissors']),
+      T('fashion', 'Fashion', 'Moda', 'a fashion boutique with clothing racks, mannequins, shoes and handbags', ['a handbag', 'a shopping bag', 'a hat box']),
+      T('music', 'Music', 'Música', 'a music room with instruments, music stands, speakers and floating music notes', ['a guitar', 'headphones', 'a microphone']),
+      T('fitness', 'Fitness', 'Fitness', 'a bright gym studio with yoga mats, dumbbells, a water bottle and plants', ['a water bottle', 'a yoga mat', 'dumbbells']),
+      T('creativeStudio', 'Creative Studio', 'Estudio creativo', 'a creative studio with a desk, mood boards, craft supplies, a laptop and plants', ['a sketchbook', 'a laptop', 'colored pencils'])
+    ]},
+    { en: 'Nostalgia', es: 'Nostalgia', i: '📼', items: [
+      T('retroBedroom', 'Retro Bedroom', 'Habitación retro', 'a retro bedroom with posters without text, a lava lamp, a rotary phone and a checkered rug', ['a rotary phone', 'a lava lamp', 'a cassette tape']),
+      T('vintageKitchen', 'Vintage Kitchen', 'Cocina vintage', 'a vintage kitchen with a retro fridge, checkered floor, canisters and a stand mixer', ['a stand mixer', 'a pie', 'a retro radio']),
+      T('oldBookstore', 'Old Bookstore', 'Librería antigua', 'an old bookstore with dusty shelves, a rolling ladder, stacked books and a reading lamp', ['an old book', 'a magnifying glass', 'a reading lamp']),
+      T('recordPlayer', 'Record Player', 'Tocadiscos', 'a cozy music corner with a record player, vinyl records and a comfy chair', ['a vinyl record', 'headphones', 'a record player']),
+      T('rollerSkates', 'Roller Skates', 'Patines', 'a roller rink with disco balls, skates, stars and fun retro details', ['roller skates', 'a disco ball', 'a milkshake']),
+      T('cassetteTapes', 'Cassette Tapes', 'Casetes', 'a retro music scene with cassette tapes, a boombox and a walkman', ['a cassette tape', 'a boombox', 'a walkman']),
+      T('childhoodBedroom', 'Childhood Bedroom', 'Habitación de la infancia', "a childhood bedroom with toys, a toy chest, stuffed animals and a dollhouse", ['a teddy bear', 'a toy chest', 'a dollhouse']),
+      T('treehouse', 'Treehouse', 'Casita del árbol', 'a treehouse in a big tree with a rope ladder, windows and a small flag', ['a rope ladder', 'binoculars', 'a lantern']),
+      T('lemonadeStand', 'Lemonade Stand', 'Puesto de limonada', 'a lemonade stand with a striped awning, pitchers, lemons and cups', ['a lemonade pitcher', 'a lemon', 'a cup']),
+      T('vintageToys', 'Vintage Toys', 'Juguetes vintage', 'a collection of vintage toys like a rocking horse, spinning top, wind-up robot and dolls', ['a spinning top', 'a rocking horse', 'a wind-up robot'])
+    ]},
+    { en: 'Celestial', es: 'Celestial', i: '🌙', items: [
+      T('moon', 'Moon', 'Luna', 'a dreamy night sky with a big crescent moon, clouds and stars', ['a star', 'a moon lantern', 'a cloud pillow']),
+      T('stars', 'Stars', 'Estrellas', 'a sky full of twinkling stars, shooting stars and fluffy clouds', ['a star', 'a star wand', 'a jar of stars']),
+      T('constellations', 'Constellations', 'Constelaciones', 'a starry night with connected constellation lines and a telescope', ['a telescope', 'a star map', 'a lantern']),
+      T('zodiac', 'Zodiac', 'Zodíaco', 'a celestial zodiac scene with zodiac symbols, stars and moon phases', ['a zodiac charm', 'a crystal', 'a star']),
+      T('planets', 'Planets', 'Planetas', 'an outer space scene with ringed planets, stars, comets and a little rocket', ['a rocket', 'a planet', 'a space helmet']),
+      T('moonPhases', 'Moon Phases', 'Fases de la luna', 'a night sky with a row of moon phases, stars and clouds', ['a moon charm', 'a star', 'a candle']),
+      T('celestialGarden', 'Celestial Garden', 'Jardín celestial', 'a celestial garden where flowers grow among stars, moons and glowing orbs', ['a star flower', 'a moon lantern', 'a crystal']),
+      T('cosmicDream', 'Cosmic Dream', 'Sueño cósmico', 'a cosmic dreamscape with swirling galaxies, planets, stars and clouds', ['a star', 'a planet', 'a dream catcher'])
+    ]},
+    { en: 'Cultural / World', es: 'Cultural / Mundo', i: '🌎', items: [
+      T('latinAmerica', 'Latin America', 'Latinoamérica', 'a Latin American inspired setting with colorful colonial houses, papel picado banners, tropical plants and fruit', ['a basket of tropical fruit', 'maracas', 'a clay pot']),
+      T('venezuela', 'Venezuela', 'Venezuela', 'a Venezuelan inspired setting with colonial houses, palm trees, a blooming araguaney tree and tepui mountains in the distance', ['an arepa', 'a cuatro guitar', 'maracas']),
+      T('colombia', 'Colombia', 'Colombia', 'a Colombian inspired setting with colorful Guatapé-style houses, coffee plants and wax palms', ['a coffee cup', 'a woven bag', 'a sombrero vueltiao']),
+      T('mexico', 'Mexico', 'México', 'a Mexican inspired setting with papel picado, colorful houses, cacti and marigold flowers', ['a clay pot', 'maracas', 'a pan dulce']),
+      T('brazil', 'Brazil', 'Brasil', 'a Brazilian inspired setting with tropical beaches, palm trees, toucans and carnival decorations', ['a coconut', 'a tambourine', 'a feather fan']),
+      T('japan', 'Japan', 'Japón', 'a Japanese inspired setting with cherry blossoms, paper lanterns, a torii gate and a small wooden bridge', ['a paper fan', 'a bento box', 'a teacup']),
+      T('korea', 'Korea', 'Corea', 'a Korean inspired setting with a hanok house, lanterns, cherry blossoms and mountains', ['a paper lantern', 'a hanbok ribbon', 'a tea set']),
+      T('france', 'France', 'Francia', 'a French inspired setting with a Parisian café, balconies, flower boxes and the Eiffel Tower in the distance', ['a croissant', 'a baguette', 'a beret']),
+      T('italy', 'Italy', 'Italia', 'an Italian inspired setting with a seaside village, terracotta roofs, lemon trees and a gelato cart', ['a gelato cone', 'a pizza', 'a lemon']),
+      T('greece', 'Greece', 'Grecia', 'a Greek inspired setting with whitewashed houses, blue domes, bougainvillea and the sea', ['an olive branch', 'a clay amphora', 'a sun hat']),
+      T('spain', 'Spain', 'España', 'a Spanish inspired setting with tiled courtyards, orange trees, flamenco fans and archways', ['a hand fan', 'an orange', 'a castanet']),
+      T('morocco', 'Morocco', 'Marruecos', 'a Moroccan inspired setting with ornate arches, lanterns, tiled patterns and a market', ['a brass lantern', 'a teapot', 'a woven basket'])
+    ]}
+  ];
+
+  /* ---------- 05 · ACTIVIDAD (una opción) ---------- */
+  const activities = [
+    o('reading', 'Reading', 'Leyendo', 'reading a book', { i: '📚' }),
+    o('writing', 'Writing', 'Escribiendo', 'writing a letter', { i: '✉️' }),
+    o('painting', 'Painting', 'Pintando', 'painting on a canvas', { i: '🎨' }),
+    o('drawing', 'Drawing', 'Dibujando', 'drawing in a sketchbook', { i: '✏️' }),
+    o('cooking', 'Cooking', 'Cocinando', 'cooking a delicious meal', { i: '🍳' }),
+    o('baking', 'Baking', 'Horneando', 'baking sweet treats', { i: '🧁' }),
+    o('gardening', 'Gardening', 'Cuidando el jardín', 'gardening and planting flowers', { i: '🌱' }),
+    o('coffee', 'Drinking Coffee', 'Tomando café', 'sipping a cup of coffee', { i: '☕' }),
+    o('tea', 'Having Tea', 'Tomando té', 'enjoying a cup of tea', { i: '🫖' }),
+    o('shopping', 'Shopping', 'De compras', 'shopping with bags in hand', { i: '🛍️' }),
+    o('traveling', 'Traveling', 'Viajando', 'traveling with a suitcase', { i: '🧳' }),
+    o('packing', 'Packing a Suitcase', 'Haciendo la maleta', 'packing a suitcase', { i: '👜' }),
+    o('walking', 'Walking', 'Caminando', 'taking a leisurely walk', { i: '🚶' }),
+    o('dancing', 'Dancing', 'Bailando', 'dancing happily', { i: '💃' }),
+    o('singing', 'Singing', 'Cantando', 'singing with music notes floating around', { i: '🎤' }),
+    o('music', 'Playing Music', 'Tocando música', 'playing a musical instrument', { i: '🎸' }),
+    o('sleeping', 'Sleeping', 'Durmiendo', 'sleeping peacefully', { i: '😴' }),
+    o('relaxing', 'Relaxing', 'Relajándose', 'relaxing comfortably', { i: '🛋️' }),
+    o('decorating', 'Decorating', 'Decorando', 'decorating with garlands and ornaments', { i: '🎀' }),
+    o('celebrating', 'Celebrating', 'Celebrando', 'celebrating with balloons and confetti', { i: '🎉' }),
+    o('exploring', 'Exploring', 'Explorando', 'exploring with curiosity', { i: '🧭' }),
+    o('photos', 'Taking Photos', 'Tomando fotos', 'taking photos with a camera', { i: '📷' }),
+    o('crafting', 'Crafting', 'Haciendo manualidades', 'making crafts with paper and ribbons', { i: '✂️' }),
+    o('journaling', 'Journaling', 'Escribiendo en su diario', 'writing in a journal', { i: '📓' }),
+    o('picnic', 'Having a Picnic', 'Haciendo un picnic', 'having a picnic on a blanket', { i: '🧺' }),
+    o('playing', 'Playing', 'Jugando', 'playing joyfully', { i: '🪁' }),
+    o('working', 'Working', 'Trabajando', 'working busily', { i: '💻' }),
+    o('potions', 'Making Potions', 'Haciendo pociones', 'brewing a magical potion in a bubbling cauldron', { i: '🧪' }),
+    o('pickingFlowers', 'Picking Flowers', 'Recogiendo flores', 'picking fresh flowers into a basket', { i: '💐' }),
+    o('flying', 'Flying', 'Volando', 'flying through the sky', { i: '🕊️' }),
+    o('custom', 'Custom Activity', 'Actividad personalizada', '', { i: '✍️' })
+  ];
+
+  /* ---------- 06 · COMPOSICIÓN (una) + extras (varios) ---------- */
+  const compositions = [
+    o('charEnv', 'Character + Environment', 'Personaje + entorno', 'character placed within a detailed environment, balanced between subject and setting', { i: '🏞️' }),
+    o('fullScene', 'Full Scene', 'Escena completa', 'full detailed scene filling the page', { i: '🖼️' }),
+    o('closeUp', 'Close-Up', 'Primer plano', 'close-up framing focused on the character', { i: '🔍' }),
+    o('centered', 'Centered Character', 'Personaje centrado', 'centered character composition with the subject as a clear focal point', { i: '🎯' }),
+    o('story', 'Storytelling Scene', 'Escena narrativa', 'storytelling composition that captures a sweet moment of a story', { i: '📖' }),
+    o('pattern', 'Pattern', 'Patrón', 'repeating pattern layout with the subject and small elements arranged evenly across the page', { i: '🔁' }),
+    o('decorative', 'Decorative Scene', 'Escena decorativa', 'decorative composition with ornamental elements arranged gracefully around the subject', { i: '💐' })
+  ];
+  const compExtras = [
+    o('fg', 'Foreground Elements', 'Elementos en primer plano', 'foreground details such as flowers, leaves or small objects', { i: '🌼' }),
+    o('bg', 'Background Elements', 'Elementos de fondo', 'background elements that complete the setting', { i: '🏔️' }),
+    o('deco', 'Decorative Objects', 'Objetos decorativos', 'small decorative objects scattered throughout the scene', { i: '🎐' }),
+    o('frame', 'Framing Elements', 'Marco decorativo', 'a decorative frame of elements around the edges of the page', { i: '🪞' })
+  ];
+
+  /* ---------- 07 · NIVEL (uno) ---------- */
+  const levels = [
+    o('boldEasy', 'Bold & Easy', 'Trazo grueso y fácil', 'bold and easy coloring style with very thick clean outlines, large enclosed coloring areas, minimal tiny details and simple readable shapes', { age: { es: '3 a 6 años · también adultos que buscan algo relajante', en: 'Ages 3–6 · also adults who want something relaxing' }, i: '🖍️' }),
+    o('easy', 'Easy', 'Fácil', 'easy coloring style with clean bold outlines, simple shapes, spacious coloring areas and limited small details', { age: { es: '4 a 8 años', en: 'Ages 4–8' }, i: '🟢' }),
+    o('moderate', 'Moderate', 'Intermedio', 'moderate coloring complexity with balanced detail, medium-sized coloring areas and decorative elements without excessive complexity', { age: { es: '8 a 12 años', en: 'Ages 8–12' }, i: '🟡' }),
+    o('detailed', 'Detailed', 'Detallado', 'detailed coloring style with rich decorative details, layered elements and moderately intricate linework', { age: { es: 'Adolescentes y adultos, 12 años en adelante', en: 'Teens and adults, ages 12+' }, i: '🟠' }),
+    o('intricate', 'Intricate', 'Muy detallado', 'intricate coloring style with highly detailed linework, elaborate patterns, numerous small enclosed coloring areas and intricate decorative elements', { age: { es: 'Adultos que disfrutan colorear con calma', en: 'Adults who enjoy slow, mindful coloring' }, i: '🔴' })
+  ];
+
+  /* ---------- 08 · AUDIENCIA (una) ---------- */
+  const audiences = [
+    o('kids', 'Kids', 'Niños', 'designed for children, child-friendly with simple shapes, large coloring areas and a friendly expression', { i: '🧒' }),
+    o('teens', 'Teens', 'Adolescentes', 'designed for teens, trendy cute aesthetic with expressive characters and stylish decorative elements', { i: '🎧' }),
+    o('adults', 'Adults', 'Adultos', 'designed for adults, sophisticated composition with elegant decorative details and balanced complexity', { i: '👩' }),
+    o('all', 'All Ages', 'Todas las edades', 'suitable for all ages, accessible clean line art with a friendly composition', { i: '👨‍👩‍👧' })
+  ];
+
+  /* ---------- 09 · FORMATO (uno) + distribución (una)
+     ar = proporción que la clienta elige en su generador */
+  const formats = [
+    o('letterP', '8.5 × 11 Portrait', '8.5 × 11 vertical', 'vertical portrait page layout', { ar: '3:4', i: '📄' }),
+    o('8x10', '8 × 10 Portrait', '8 × 10 vertical', 'vertical portrait page layout', { ar: '4:5', i: '📄' }),
+    o('sq85', '8.5 × 8.5 Square', '8.5 × 8.5 cuadrado', 'square page layout', { ar: '1:1', i: '⬜' }),
+    o('letterL', '11 × 8.5 Landscape', '11 × 8.5 horizontal', 'horizontal landscape page layout', { ar: '4:3', i: '🖼️' }),
+    o('r34', '3:4 Portrait', '3:4 vertical', 'vertical portrait page layout', { ar: '3:4', i: '📱' }),
+    o('square', 'Square', 'Cuadrado', 'square page layout', { ar: '1:1', i: '⬜' }),
+    o('portrait', 'Portrait', 'Vertical', 'vertical portrait page layout', { ar: '2:3', i: '📄' }),
+    o('landscape', 'Landscape', 'Horizontal', 'horizontal landscape page layout', { ar: '3:2', i: '🖼️' })
+  ];
+  const layouts = [
+    o('full', 'Full Page', 'Página completa', 'full-page illustration with a thin clean white margin', { i: '📃' }),
+    o('centeredLayout', 'Centered Composition', 'Composición centrada', 'centered composition with generous white space around the subject', { i: '⊙' }),
+    o('edge', 'Edge-to-Edge Composition', 'De borde a borde', 'edge-to-edge composition extending to the page borders', { i: '⬛' })
+  ];
+
+  /* ---------- 10 · ESTILO DE IMPRESIÓN (todos activos por defecto) ---------- */
+  const print = [
+    o('white', 'Pure White Background', 'Fondo blanco puro', ''),
+    o('black', 'Black Line Art', 'Líneas negras', ''),
+    o('closed', 'Clean Closed Outlines', 'Contornos cerrados', ''),
+    o('nocolor', 'No Color', 'Sin color', ''),
+    o('noshade', 'No Shading', 'Sin sombras', ''),
+    o('nogray', 'No Gray', 'Sin grises', ''),
+    o('nograd', 'No Gradients', 'Sin degradados', ''),
+    o('notext', 'No Text', 'Sin texto', ''),
+    o('nowm', 'No Watermark', 'Sin marca de agua', ''),
+    o('printable', 'Printable', 'Imprimible', ''),
+    o('contrast', 'High Contrast', 'Alto contraste', ''),
+    o('vector', 'Vector-Style Line Art', 'Líneas estilo vector', '')
+  ];
+
+  /* ---------- SURPRISE ME: combinaciones coherentes curadas ---------- */
+  const surprises = [
+    { style: 'cozy', chars: ['bunny'], outfit: 'cozy', theme: 'bakery', activity: 'baking', comp: 'story', level: 'easy', audience: 'all' },
+    { style: 'kawaii', chars: ['cat'], outfit: 'casual', theme: 'coffeeShop', activity: 'coffee', comp: 'centered', level: 'boldEasy', audience: 'kids' },
+    { style: 'fantasy', chars: ['fairy'], outfit: 'fairy', theme: 'enchantedForest', activity: 'exploring', comp: 'fullScene', level: 'detailed', audience: 'adults' },
+    { style: 'darkCute', chars: ['witch'], outfit: 'witch', theme: 'potionRoom', activity: 'potions', comp: 'charEnv', level: 'moderate', audience: 'teens' },
+    { style: 'cottagecore', chars: ['girl'], outfit: 'vintage', theme: 'cottageGarden', activity: 'pickingFlowers', comp: 'fullScene', level: 'detailed', audience: 'adults' },
+    { style: 'storybook', chars: ['dragon'], outfit: null, theme: 'enchantedCastle', activity: 'flying', comp: 'story', level: 'moderate', audience: 'all' },
+    { style: 'kawaii', chars: ['capybara'], outfit: 'beach', theme: 'venezuela', activity: 'relaxing', comp: 'charEnv', level: 'easy', audience: 'all' },
+    { style: 'whimsical', chars: ['gnome'], outfit: null, theme: 'mushroomVillage', activity: 'exploring', comp: 'fullScene', level: 'moderate', audience: 'all' },
+    { style: 'chibi', chars: ['witch'], outfit: 'witch', theme: 'halloween', activity: 'celebrating', comp: 'centered', level: 'easy', audience: 'kids' },
+    { style: 'floral', chars: ['woman'], outfit: 'vintage', theme: 'butterflyGarden', activity: 'relaxing', comp: 'decorative', level: 'detailed', audience: 'adults' },
+    { style: 'magical', chars: ['unicorn'], outfit: null, theme: 'magicalGarden', activity: 'playing', comp: 'fullScene', level: 'easy', audience: 'kids' },
+    { style: 'cozy', chars: ['bear'], outfit: 'pajamas', theme: 'readingNook', activity: 'reading', comp: 'charEnv', level: 'boldEasy', audience: 'adults' },
+    { style: 'retro', chars: ['girl'], outfit: 'vintage', theme: 'retroBedroom', activity: 'music', comp: 'fullScene', level: 'moderate', audience: 'teens' },
+    { style: 'fairytale', chars: ['princess'], outfit: 'princess', theme: 'enchantedCastle', activity: 'dancing', comp: 'story', level: 'detailed', audience: 'all' },
+    { style: 'botanical', chars: ['hedgehog'], outfit: 'cozy', theme: 'botanicalGarden', activity: 'gardening', comp: 'charEnv', level: 'moderate', audience: 'adults' },
+    { style: 'kawaii', chars: ['panda'], outfit: 'casual', theme: 'teaParty', activity: 'tea', comp: 'centered', level: 'easy', audience: 'kids' },
+    { style: 'cartoon', chars: ['dog'], outfit: 'beach', theme: 'beachVacation', activity: 'playing', comp: 'fullScene', level: 'easy', audience: 'kids' },
+    { style: 'mandala', chars: ['butterfly'], outfit: null, theme: 'celestialGarden', activity: null, comp: 'decorative', level: 'intricate', audience: 'adults' },
+    { style: 'cozy', chars: ['fox'], outfit: 'seasonal', theme: 'autumn', activity: 'walking', comp: 'charEnv', level: 'moderate', audience: 'all' },
+    { style: 'doodle', chars: ['cupcake'], outfit: null, theme: 'bakery', activity: 'celebrating', comp: 'pattern', level: 'easy', audience: 'all' },
+    { style: 'kawaii', chars: ['penguin'], outfit: 'winter', theme: 'winter', activity: 'playing', comp: 'fullScene', level: 'boldEasy', audience: 'kids' },
+    { style: 'gothicCute', chars: ['ghost'], outfit: null, theme: 'halloween', activity: 'playing', comp: 'story', level: 'easy', audience: 'teens' },
+    { style: 'fantasy', chars: ['mermaid'], outfit: null, theme: 'tropicalIsland', activity: 'exploring', comp: 'fullScene', level: 'detailed', audience: 'adults' },
+    { style: 'cozy', chars: ['girl'], outfit: 'cozy', theme: 'rainyDay', activity: 'journaling', comp: 'charEnv', level: 'moderate', audience: 'adults' },
+    { style: 'zentangle', chars: ['deer'], outfit: null, theme: 'woodland', activity: null, comp: 'decorative', level: 'intricate', audience: 'adults' },
+    { style: 'cottagecore', chars: ['frog'], outfit: 'cozy', theme: 'picnic', activity: 'picnic', comp: 'story', level: 'easy', audience: 'all' }
+  ];
+
+  window.CBG_DATA = {
+    styles, characters, outfits, details, themeGroups, activities,
+    compositions, compExtras, levels, audiences, formats, layouts, print, surprises,
+    themes: themeGroups.flatMap(g => g.items)
+  };
+})();
+
+</script>
+  <script>
+/* =========================================================
+   Coloring Book Prompt Generator — BOOK MODE DATA
+   Cada mundo: place (lugar), scenes: [título EN, título ES, escena]
+   La primera escena de cada mundo es la bienvenida.
+   ========================================================= */
+(function () {
+  const W = (id, en, es, i, place, scenes) => ({ id, en, es, i, place, scenes });
+
+  const worlds = [
+    W('cozyCafe', 'The Cozy Café', 'El café acogedor', '☕', 'a cozy café', [
+      ['Welcome to the Cozy Café', 'Bienvenidos al café acogedor', 'standing at the entrance of a charming café with an awning, potted plants and little café tables'],
+      ['Choosing Pastries', 'Eligiendo pastelitos', 'choosing pastries from a glass display full of croissants, cupcakes and cookies'],
+      ['Making Coffee', 'Preparando café', 'making coffee with an espresso machine, cups and a coffee grinder'],
+      ['Latte Art', 'Arte en el café', 'carefully pouring heart-shaped latte art into a big cup'],
+      ['Fresh Croissants', 'Croissants recién horneados', 'taking a tray of fresh croissants out of the oven'],
+      ['Window Seat', 'Junto a la ventana', 'sipping hot cocoa at a window seat with gentle rain outside'],
+      ['Serving Friends', 'Atendiendo a los amigos', 'serving a tray of drinks and desserts to tiny animal customers'],
+      ['Cake Decorating', 'Decorando pasteles', 'decorating a layered cake with frosting swirls and berries'],
+      ['The Café Cat', 'El gato del café', 'petting a fluffy café cat napping on a cushion'],
+      ['Tea Collection', 'Colección de tés', 'choosing from jars of tea leaves on wooden shelves'],
+      ['Sunny Terrace', 'La terraza soleada', 'relaxing at a sunny outdoor terrace with string lights and flower pots'],
+      ['Closing Time', 'Hora de cerrar', 'sweeping the café floor at dusk with chairs stacked on the tables']
+    ]),
+    W('enchantedForest', 'The Enchanted Forest', 'El bosque encantado', '🍄', 'an enchanted forest', [
+      ['Into the Enchanted Forest', 'Entrando al bosque encantado', 'entering an enchanted forest path lined with giant trees and glowing mushrooms'],
+      ['Fairy Ring', 'El círculo de hadas', 'dancing inside a ring of mushrooms with tiny fairies'],
+      ['The Friendly Tree', 'El árbol amigo', 'meeting a friendly old tree with a gentle face'],
+      ['Firefly Night', 'Noche de luciérnagas', 'catching fireflies in a glass jar among tall ferns'],
+      ['Treehouse Home', 'La casita del árbol', 'climbing a rope ladder up to a cozy treehouse'],
+      ['Mushroom Umbrella', 'Paraguas de hongo', 'sheltering under a giant mushroom during a light rain'],
+      ['Forest Friends', 'Amigos del bosque', 'sharing berries with a squirrel, a rabbit and a little bird'],
+      ['The Magic Pond', 'El estanque mágico', 'looking at a reflection in a sparkling pond with lily pads and frogs'],
+      ['The Owl Library', 'La biblioteca del búho', 'reading with a wise owl inside a hollow tree full of books'],
+      ['Flower Crown', 'Corona de flores', 'making a flower crown while sitting on a mossy log'],
+      ['Crystal Cave', 'La cueva de cristales', 'exploring a cave full of big shimmering crystals'],
+      ['Moonlit Clearing', 'El claro de luna', 'resting in a moonlit clearing surrounded by stars and fireflies']
+    ]),
+    W('cozyHome', 'Cozy Home Days', 'Días en casa', '🏡', 'a cozy home', [
+      ['Welcome Home', 'Bienvenidos a casa', 'standing in front of a charming little house with a round door and a flower garden'],
+      ['Cozy Living Room', 'La sala acogedora', 'relaxing on a sofa with cushions, a knitted blanket and a fireplace'],
+      ['Kitchen Helper', 'Ayudando en la cocina', 'cooking soup with pots, spoons and fresh vegetables'],
+      ['Laundry Day', 'Día de lavar ropa', 'hanging laundry on a clothesline in the sunny backyard'],
+      ['Knitting Corner', 'El rincón de tejer', 'knitting a scarf with balls of yarn in a basket'],
+      ['Houseplants', 'Plantitas de casa', 'repotting houseplants on a sunny table'],
+      ['The Bookshelf', 'El librero', 'choosing a book from a tall bookshelf with a rolling ladder'],
+      ['Bubble Bath', 'Baño de burbujas', 'relaxing in a clawfoot bathtub full of bubbles'],
+      ['Home Office', 'La oficina en casa', 'working at a tidy desk with a laptop, a lamp and plants'],
+      ['Porch Swing', 'El columpio del porche', 'swinging on a porch swing with a glass of lemonade'],
+      ['Family Dinner', 'Cena en familia', 'setting the table for a family dinner'],
+      ['Bedtime Story', 'Cuento para dormir', 'reading a bedtime story in bed with a nightlight']
+    ]),
+    W('magicShop', 'The Little Magic Shop', 'La tiendita mágica', '🔮', 'a little magic shop', [
+      ['Welcome to the Magic Shop', 'Bienvenidos a la tienda mágica', 'standing at the door of a crooked magic shop with hanging lanterns and potion bottles in the window'],
+      ['Potion Brewing', 'Preparando pociones', 'stirring a bubbling cauldron with swirling magical steam'],
+      ['The Floating Spell Book', 'El libro de hechizos', 'reading a giant spell book floating in the air'],
+      ['Crystal Ball', 'La bola de cristal', 'gazing into a crystal ball on a draped table'],
+      ['Choosing a Wand', 'Eligiendo una varita', 'choosing a wand from rows of wand boxes'],
+      ['Drying Herbs', 'Secando hierbas', 'hanging bundles of dried herbs from the ceiling beams'],
+      ['Broomstick Ride', 'Paseo en escoba', 'riding a broomstick over the rooftops under a crescent moon'],
+      ['Magic Familiar', 'El gatito mágico', 'cuddling a little black cat familiar'],
+      ['Candle Making', 'Haciendo velas', 'making candles with melted wax and molds'],
+      ['Jar of Stars', 'Frasco de estrellas', 'capturing tiny stars inside glass jars'],
+      ['The Magic Mirror', 'El espejo mágico', 'looking into an ornate magic mirror with sparkles'],
+      ['Midnight Tea', 'Té de medianoche', 'sharing tea with a friendly little ghost at midnight']
+    ]),
+    W('garden', 'The Secret Garden', 'El jardín secreto', '🌷', 'a secret flower garden', [
+      ['Welcome to the Garden', 'Bienvenidos al jardín', 'opening a wooden garden gate covered in climbing roses'],
+      ['Planting Seeds', 'Sembrando semillas', 'planting seeds in neat rows with a little shovel'],
+      ['Picking Flowers', 'Recogiendo flores', 'picking flowers into a woven basket'],
+      ['Butterfly Visit', 'Visita de mariposas', 'watching butterflies land on blooming flowers'],
+      ['The Greenhouse', 'El invernadero', 'caring for plants inside a glass greenhouse'],
+      ['Vegetable Patch', 'La huerta', 'harvesting carrots, lettuce and tomatoes'],
+      ['The Birdhouse', 'La casita de pájaros', 'hanging a birdhouse on a tree branch with little birds nearby'],
+      ['Garden Tea', 'Té en el jardín', 'having tea at a small table surrounded by flowers'],
+      ['Busy Bees', 'Las abejitas', 'waving at smiling bees buzzing around a beehive'],
+      ['Sunflower Field', 'Campo de girasoles', 'walking through a field of tall sunflowers'],
+      ['Garden Swing', 'El columpio del jardín', 'swinging on a rope swing hanging from a flowering tree'],
+      ['Rainy Garden', 'Jardín bajo la lluvia', 'watching snails and puddles in the garden on a rainy day']
+    ]),
+    W('beach', 'Beach Days', 'Días de playa', '🏖️', 'a sunny beach', [
+      ['Welcome to the Beach', 'Bienvenidos a la playa', 'arriving at a sunny beach with palm trees, waves and seagulls'],
+      ['Building Sandcastles', 'Castillos de arena', 'building a big sandcastle with buckets and spades'],
+      ['Seashell Hunting', 'Buscando caracolas', 'collecting seashells along the shore'],
+      ['Surfing Waves', 'Surfeando olas', 'riding a small wave on a surfboard'],
+      ['Umbrella Picnic', 'Picnic bajo la sombrilla', 'having a picnic under a beach umbrella'],
+      ['Tide Pools', 'Las pozas', 'discovering crabs and starfish in the tide pools'],
+      ['Ice Cream Cart', 'El carrito de helados', 'buying ice cream from a beach ice cream cart'],
+      ['Beach Volleyball', 'Voleibol de playa', 'playing volleyball on the sand'],
+      ['Under the Sea', 'Bajo el mar', 'snorkeling among fish, coral and sea turtles'],
+      ['The Lighthouse', 'El faro', 'visiting a tall lighthouse on the rocks'],
+      ['Boat Ride', 'Paseo en bote', 'sailing in a little sailboat on calm waves'],
+      ['Sunset Walk', 'Paseo al atardecer', 'walking along the shore with a big setting sun']
+    ]),
+    W('christmas', 'A Cozy Christmas', 'Una Navidad acogedora', '🎄', 'a snowy Christmas village', [
+      ['Welcome to Christmas Village', 'Bienvenidos a la aldea navideña', 'standing in a snowy Christmas village with decorated houses and twinkling lights'],
+      ['Decorating the Tree', 'Decorando el árbol', 'hanging ornaments on a big Christmas tree'],
+      ['Gingerbread House', 'La casita de jengibre', 'building a gingerbread house with candy decorations'],
+      ['Wish Letter', 'La carta de deseos', 'writing a wish letter by the fireplace'],
+      ['Building a Snowman', 'Haciendo un muñeco de nieve', 'building a snowman with a scarf and a carrot nose'],
+      ['Ice Skating', 'Patinando sobre hielo', 'ice skating on a frozen pond'],
+      ['Hot Cocoa', 'Chocolate caliente', 'drinking hot cocoa with marshmallows by the fire'],
+      ['Wrapping Gifts', 'Envolviendo regalos', 'wrapping presents with ribbons and bows'],
+      ['Sledding', 'Deslizándose en trineo', 'sledding down a snowy hill'],
+      ['Hanging Stockings', 'Colgando las medias', 'hanging stockings on the fireplace mantel'],
+      ['Christmas Carols', 'Villancicos', 'singing carols with music notes and snowflakes around'],
+      ['Christmas Morning', 'Mañana de Navidad', 'opening gifts under the tree on Christmas morning']
+    ]),
+    W('halloween', 'Sweet Halloween', 'Halloween dulce', '🎃', 'a cute Halloween town', [
+      ['Welcome to Halloween Town', 'Bienvenidos al pueblo de Halloween', 'standing in a cute Halloween town with jack-o-lanterns and a crescent moon'],
+      ['Pumpkin Carving', 'Tallando calabazas', 'carving a smiling jack-o-lantern'],
+      ['Costume Time', 'Hora del disfraz', 'trying on a cute costume in front of a mirror'],
+      ['Trick or Treat', 'Dulce o truco', 'collecting candy in a pumpkin bucket at a decorated door'],
+      ['Friendly Haunted House', 'La casa embrujada amigable', 'visiting a haunted house with friendly little ghosts'],
+      ['Pumpkin Patch', 'El campo de calabazas', 'choosing pumpkins in a pumpkin patch'],
+      ["Witch's Brew", 'La poción de la bruja', 'stirring a bubbling cauldron with a little witch hat nearby'],
+      ['Bat Friends', 'Amigos murciélagos', 'playing with cute little bats under the moon'],
+      ['Candy Sorting', 'Ordenando dulces', 'sorting a big pile of Halloween candy'],
+      ['Spooky Forest Walk', 'Paseo por el bosque', 'walking through a spooky-cute forest with a lantern'],
+      ['Moonlight Party', 'Fiesta bajo la luna', 'having a Halloween party with pumpkins and garlands'],
+      ['Sleepy Ghost', 'El fantasmita dormilón', 'tucking a sleepy little ghost into bed']
+    ]),
+    W('venezuela', 'My Venezuela', 'Mi Venezuela', '🇻🇪', 'a colorful Venezuelan town', [
+      ['Welcome to Venezuela', 'Bienvenidos a Venezuela', 'standing in a colorful colonial Venezuelan town with tiled roofs, balconies and palm trees'],
+      ['Making Arepas', 'Haciendo arepas', 'making arepas on a budare griddle in a cozy kitchen'],
+      ['Tequeños Party', 'Fiesta de tequeños', 'serving a plate of tequeños at a party table'],
+      ['El Ávila Mountain', 'El Ávila', 'hiking with the Ávila mountain in the background'],
+      ['Angel Falls', 'El Salto Ángel', 'admiring the tall Angel Falls waterfall flowing from a tepui'],
+      ['Los Roques Beach', 'Playa en Los Roques', 'relaxing on a Los Roques beach with palm trees and calm water'],
+      ['Turpial Friend', 'Un amigo turpial', 'meeting a turpial bird perched on a branch'],
+      ['Araguaney in Bloom', 'El araguaney florecido', 'sitting under a blooming araguaney tree full of flowers'],
+      ['Playing the Cuatro', 'Tocando el cuatro', 'playing a cuatro guitar with maracas nearby'],
+      ['Capybara Buddy', 'Un chigüire amigo', 'cuddling a friendly capybara by a river in the plains'],
+      ['Hallacas at Christmas', 'Hallacas navideñas', 'wrapping hallacas in banana leaves at a family table'],
+      ['Flying a Papagayo', 'Volando papagayo', 'flying a kite on a sunny windy day'],
+      ['Dominoes Afternoon', 'Tarde de dominó', 'playing dominoes at a small outdoor table']
+    ]),
+    W('bakery', 'The Sweet Bakery', 'La pastelería dulce', '🧁', 'a sweet bakery', [
+      ['Welcome to the Bakery', 'Bienvenidos a la pastelería', 'standing in front of a sweet bakery with a striped awning and cakes in the window'],
+      ['Kneading Dough', 'Amasando', 'kneading dough on a floured table'],
+      ['Frosting Cupcakes', 'Decorando cupcakes', 'frosting cupcakes with swirls and sprinkles'],
+      ['Cookie Cutters', 'Cortando galletas', 'cutting cookies into stars and hearts'],
+      ['Bread Basket', 'La canasta de pan', 'carrying a basket full of fresh bread loaves'],
+      ['Macaron Tower', 'Torre de macarons', 'building a tall macaron tower'],
+      ['Donut Day', 'Día de donas', 'glazing donuts on a cooling rack'],
+      ['Pie on the Windowsill', 'El pie en la ventana', 'setting a fresh pie to cool on the windowsill'],
+      ['Sprinkle Party', 'Fiesta de chispitas', 'covering a cake in colorful sprinkles'],
+      ['Cake Delivery', 'Entregando un pastel', 'carrying a big cake box on a delivery bicycle'],
+      ['Melting Chocolate', 'Derritiendo chocolate', 'stirring a pot of melted chocolate'],
+      ['The Big Cake', 'El gran pastel', 'admiring a giant tiered celebration cake']
+    ]),
+    W('celestial', 'Dreamy Skies', 'Cielos soñados', '🌙', 'a dreamy starry sky', [
+      ['Welcome to the Stars', 'Bienvenidos a las estrellas', 'floating among fluffy clouds and twinkling stars'],
+      ['Riding the Moon', 'Sobre la luna', 'sitting on a smiling crescent moon'],
+      ['Connecting Constellations', 'Uniendo constelaciones', 'drawing lines between stars to make constellations'],
+      ['Planet Hopping', 'Saltando planetas', 'hopping between small ringed planets'],
+      ['Shooting Star Wish', 'Deseo a una estrella fugaz', 'making a wish on a shooting star'],
+      ['Telescope Night', 'Noche de telescopio', 'looking through a telescope on a rooftop'],
+      ['Moon Phases', 'Fases de la luna', 'admiring a row of moon phases across the sky'],
+      ['Cloud Castle', 'El castillo de nubes', 'visiting a castle made of clouds'],
+      ['Comet Ride', 'Paseo en cometa', 'riding a friendly comet through space'],
+      ['Star Garden', 'Jardín de estrellas', 'watering star-shaped flowers in a celestial garden'],
+      ['Zodiac Friends', 'Amigos del zodíaco', 'meeting cute zodiac animals among the stars'],
+      ['Sleepy Moon', 'La luna dormilona', 'tucking a sleepy moon into a cloud blanket']
+    ]),
+    W('travel', 'Around the World', 'Vuelta al mundo', '✈️', 'a charming travel destination', [
+      ['Packing the Suitcase', 'Haciendo la maleta', 'packing a suitcase with clothes, a camera and a map'],
+      ['At the Airport', 'En el aeropuerto', 'waiting at the airport with luggage and airplanes outside'],
+      ['On the Plane', 'En el avión', 'looking out the airplane window at the clouds'],
+      ['Road Trip', 'Viaje en carretera', 'driving a little vintage car along a winding road'],
+      ['Camping Night', 'Noche de campamento', 'roasting marshmallows by a campfire next to a tent'],
+      ['European Café', 'Café europeo', 'having a croissant at a sidewalk café in a European village'],
+      ['Mountain Hike', 'Caminata en la montaña', 'hiking a mountain trail with a backpack'],
+      ['Train Journey', 'Viaje en tren', 'riding a scenic train through the countryside'],
+      ['Hot Air Balloon', 'Globo aerostático', 'floating in a hot air balloon over the hills'],
+      ['Map Adventure', 'Aventura con mapa', 'reading a treasure-style map with a compass'],
+      ['Souvenir Shop', 'Tienda de recuerdos', 'shopping for souvenirs at a little gift shop'],
+      ['Postcard Home', 'Una postal a casa', 'writing a postcard at a café table']
+    ])
+  ];
+
+  /* Escenas generales que se adaptan a cualquier mundo ({place}).
+     La última ("Sweet Dreams") siempre cierra el libro. */
+  const genericScenes = [
+    ['Good Morning', 'Buenos días', 'waking up and stretching happily in {place}'],
+    ['Breakfast Time', 'Hora del desayuno', 'eating a delicious breakfast at a little table in {place}'],
+    ['Reading Time', 'Hora de leer', 'reading a favorite book in a comfy chair in {place}'],
+    ['Tea Break', 'Pausa para el té', 'enjoying a cup of tea with cookies in {place}'],
+    ['Rainy Day', 'Día de lluvia', 'looking out a window at gentle rain in {place}'],
+    ['Picnic Day', 'Día de picnic', 'having a picnic on a checkered blanket in {place}'],
+    ['A New Friend', 'Un nuevo amigo', 'meeting a tiny new animal friend and waving hello in {place}'],
+    ['Birthday Party', 'Fiesta de cumpleaños', 'celebrating with a birthday cake, balloons and party hats in {place}'],
+    ['Writing a Letter', 'Escribiendo una carta', 'writing a letter at a little desk in {place}'],
+    ['Cozy Nap', 'Una siestita', 'napping peacefully with a soft blanket in {place}'],
+    ['Painting Time', 'Hora de pintar', 'painting on an easel with brushes and paint pots in {place}'],
+    ['Dance Party', 'A bailar', 'dancing happily with music notes floating around in {place}'],
+    ['Watering Flowers', 'Regando flores', 'watering flowers with a little watering can in {place}'],
+    ['Stargazing', 'Mirando las estrellas', 'looking up at a night sky full of stars in {place}'],
+    ['Taking Photos', 'Tomando fotos', 'taking photos with a vintage camera in {place}'],
+    ['Shopping Trip', 'De compras', 'carrying shopping bags along a charming street in {place}'],
+    ['Baking Cookies', 'Horneando galletas', 'baking cookies with a mixing bowl and cookie cutters in {place}'],
+    ['Movie Night', 'Noche de películas', 'watching a movie wrapped in a blanket with popcorn in {place}'],
+    ['Music Time', 'Hora de música', 'playing a small guitar with music notes around in {place}'],
+    ['Bubble Fun', 'Burbujas', 'blowing big soap bubbles in {place}'],
+    ['Kite Day', 'Día de papagayo', 'flying a kite on a windy day in {place}'],
+    ['Bath Time', 'Hora del baño', 'taking a bubble bath with rubber ducks in {place}'],
+    ['Tidy Up', 'A ordenar', 'tidying up with a broom and a feather duster in {place}'],
+    ['Crafting', 'Manualidades', 'making crafts with paper, ribbons and buttons in {place}'],
+    ['Snack Time', 'Merienda', 'enjoying a tasty snack in {place}'],
+    ['Bike Ride', 'Paseo en bici', 'riding a bicycle with a basket of flowers in {place}'],
+    ['Journaling', 'Mi diario', 'writing in a journal with stickers and pens in {place}'],
+    ['Puzzle Time', 'Armando un rompecabezas', 'putting together a big jigsaw puzzle in {place}'],
+    ['A Surprise Gift', 'Una sorpresa', 'opening a gift box with a big bow in {place}'],
+    ['Sunny Walk', 'Paseo soleado', 'walking along a flower-lined path in {place}'],
+    ['Sweet Treat', 'Un dulce antojo', 'holding a giant ice cream cone in {place}'],
+    ['Sleepover', 'Pijamada', 'having a sleepover with pillows and fairy lights in {place}'],
+    ['Game Night', 'Noche de juegos', 'playing a board game with dice in {place}'],
+    ['Market Day', 'Día de mercado', 'shopping at a small market stall with fruit baskets in {place}'],
+    ['Lantern Night', 'Noche de faroles', 'holding a glowing paper lantern at night in {place}'],
+    ['Big Hug', 'Un gran abrazo', 'giving a big hug to a tiny friend in {place}'],
+    ['Decorating', 'Decorando', 'decorating with garlands and bunting in {place}'],
+    ['Daydreaming', 'Soñando despierta', 'daydreaming on a cloud-shaped cushion in {place}'],
+    ['Sweet Dreams', 'Dulces sueños', 'sleeping peacefully under a starry sky with a smiling moon in {place}']
+  ];
+
+  window.CBG_BOOK = { worlds, genericScenes };
+})();
+
+</script>
+  <script>
+/* =========================================================
+   Coloring Book Prompt Generator — PROMPT ENGINE
+   Un solo motor central combina las selecciones en un prompt
+   profesional, sin repeticiones ni contradicciones.
+   ========================================================= */
+(function () {
+  const D = window.CBG_DATA;
+  const B = window.CBG_BOOK;
+
+  /* ---------- utilidades ---------- */
+  const byId = (list, id) => list.find(x => x.id === id) || null;
+  const theme = id => byId(D.themes, id);
+  const article = w => (/^[aeiou]/i.test(w) ? 'an ' : 'a ') + w;
+  const joinAnd = arr => arr.length <= 1 ? (arr[0] || '') : arr.slice(0, -1).join(', ') + ' and ' + arr[arr.length - 1];
+  const shuffle = arr => { const a = arr.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+  const pick = arr => arr[Math.floor(Math.random() * arr.length)];
+  const clean = s => (s || '').trim().replace(/\s+/g, ' ').replace(/[.。]+$/, '');
+
+  /* Niños + niveles complejos no combinan: se baja a "easy" */
+  const HEAVY = ['detailed', 'intricate'];
+  function safeLevel(state) {
+    if (state.audience === 'kids' && HEAVY.includes(state.level)) return 'easy';
+    return state.level;
+  }
+
+  /* ---------- sujeto / personaje ---------- */
+  function charPhrase(c, customText, mode) {
+    // mode: 'one' | 'two-same' | 'group-same'
+    if (!c) return '';
+    if (c.k === 'custom') return clean(customText);
+    const n = c.n;
+    if (mode === 'two-same') return c.k === 'human' ? 'two cute ' + c.pl : 'two adorable ' + n + ' characters';
+    if (mode === 'group-same') return c.k === 'human' ? 'a small group of cute ' + c.pl : 'a small group of adorable ' + n + ' characters';
+    switch (c.k) {
+      case 'human': return 'a cute ' + n;
+      case 'animal': return 'an adorable ' + n + ' character';
+      case 'fantasy': return article('charming ' + n);
+      case 'object': return article('anthropomorphic ' + n) + ' character with a cute face and tiny arms and legs';
+      default: return article(n);
+    }
+  }
+
+  function subjectPhrase(state) {
+    const chars = (state.chars || []).map(id => byId(D.characters, id)).filter(Boolean)
+      .filter(c => c.k !== 'custom' || clean(state.customChar));
+    if (!chars.length) return '';
+    const count = state.count || '1';
+    if (chars.length === 1) {
+      const mode = count === '2' ? 'two-same' : count === 'group' ? 'group-same' : 'one';
+      if (chars[0].k === 'custom') {
+        const t = clean(state.customChar);
+        if (count === '2') return 'two characters: ' + t;
+        if (count === 'group') return 'a small group of characters: ' + t;
+        return t;
+      }
+      return charPhrase(chars[0], state.customChar, mode);
+    }
+    const list = chars.map(c => charPhrase(c, state.customChar, 'one'));
+    return count === 'group' ? 'a small group of friends: ' + joinAnd(list) : joinAnd(list);
+  }
+
+  function mainProp(state) {
+    const t = theme(state.theme);
+    return t && t.props && t.props.length ? t.props[0] : 'a small cute object';
+  }
+
+  /* ---------- líneas de impresión ---------- */
+  function printFragments(printIds) {
+    const has = id => printIds.includes(id);
+    const out = [];
+    if (has('closed')) out.push('clean closed outlines');
+    if (has('black') && has('vector')) out.push('crisp black vector-style line art');
+    else if (has('black')) out.push('black line art');
+    else if (has('vector')) out.push('vector-style line art');
+    if (has('white')) out.push('pure white background');
+    const negs = [];
+    if (has('nocolor')) negs.push('no color');
+    if (has('noshade')) negs.push('no shading', 'no textures');
+    if (has('nogray')) negs.push('no gray tones');
+    if (has('nograd')) negs.push('no gradients');
+    if (negs.length) out.push(negs.join(', '));
+    if (has('contrast')) out.push('high contrast');
+    if (has('printable')) out.push('printable coloring page, high quality, ready to color');
+    const tail = [];
+    if (has('notext')) tail.push('no text');
+    if (has('nowm')) tail.push('no watermark');
+    return { body: out, tail };
+  }
+
+  /* =========================================================
+     MOTOR CENTRAL
+     opts (opcional): pose, decor, secondary, angle, story,
+                      scene (modo libro), series (modo libro)
+     ========================================================= */
+  function buildPrompt(state, opts) {
+    opts = opts || {};
+    const parts = [];
+    const style = byId(D.styles, state.style);
+    const comp = byId(D.compositions, state.comp);
+    const subject = subjectPhrase(state);
+    const count = state.count || '1';
+
+    // [STYLE] + [SUBJECT]
+    let head = ((style ? style.lead + ' ' : '') + 'coloring page illustration').trim();
+    head = head.charAt(0).toUpperCase() + head.slice(1);
+    parts.push(subject ? head + ' of ' + subject : head);
+    if (style) parts.push(style.p);
+
+    // [CHARACTER DETAILS]
+    if (subject) {
+      const det = (state.details || []).map(id => byId(D.details, id)).filter(Boolean);
+      const withs = det.filter(d => ['eyes', 'smile', 'blush', 'accessories'].includes(d.id)).map(d => d.p);
+      if (withs.length) parts.push('with ' + joinAnd(withs));
+      if (det.some(d => d.id === 'fullBody') && !(comp && comp.id === 'closeUp')) parts.push(count === '1' ? 'full-body character' : 'full-body characters');
+      if (opts.pose) parts.push(opts.pose);
+      else { const pose = det.find(d => d.g === 'pose'); if (pose) parts.push(pose.p); }
+      if (det.some(d => d.id === 'holding')) parts.push('holding ' + mainProp(state));
+    }
+
+    // [OUTFIT]
+    if (subject && state.outfit) {
+      const of = byId(D.outfits, state.outfit);
+      let txt = of && of.id === 'custom' ? (clean(state.customOutfit) ? 'wearing ' + clean(state.customOutfit) : '') : (of ? of.p : '');
+      if (txt && count !== '1') txt = txt.replace(/^wearing/, 'each wearing');
+      if (txt) parts.push(txt);
+    }
+
+    // [THEME] + [ACTIVITY] + [SCENE]
+    if (opts.scene) {
+      parts.push(opts.scene);
+    } else {
+      const act = byId(D.activities, state.activity);
+      const actTxt = act ? (act.id === 'custom' ? clean(state.customActivity) : act.p) : '';
+      const t = theme(state.theme);
+      const env = t ? t.p : '';
+      if (actTxt && env) parts.push(actTxt + ' in ' + env);
+      else if (actTxt) parts.push(actTxt);
+      else if (env) parts.push('set in ' + env);
+    }
+    if (opts.secondary) parts.push('with ' + opts.secondary + ' nearby');
+    if (opts.decor) parts.push(opts.decor);
+    if (opts.story) parts.push(opts.story);
+
+    // [COMPOSITION]
+    if (comp) parts.push(comp.p);
+    if (opts.angle) parts.push(opts.angle);
+    (state.compExtras || []).forEach(id => { const e = byId(D.compExtras, id); if (e) parts.push(e.p); });
+
+    // [AUDIENCE] + [COLORING LEVEL]
+    const aud = byId(D.audiences, state.audience);
+    if (aud) parts.push(aud.p);
+    const lvl = byId(D.levels, safeLevel(state));
+    if (lvl) parts.push(lvl.p);
+
+    // [FORMAT]
+    const fmt = byId(D.formats, state.format);
+    if (fmt) parts.push(fmt.p);
+    const lay = byId(D.layouts, state.layout);
+    if (lay) parts.push(lay.p);
+
+    // modo libro: identidad constante
+    if (opts.series) parts.push('the same recurring character design used consistently across a coloring book series');
+
+    // [LINE ART] + [PRINT]
+    const pr = printFragments(state.print || []);
+    parts.push(...pr.body);
+
+    // [CUSTOM]
+    const custom = clean(state.custom);
+    if (custom) parts.push('additional details: ' + custom);
+
+    parts.push(...pr.tail);
+
+    // quitar vacíos y repetidos exactos
+    const seen = new Set();
+    const final = parts.map(clean).filter(p => {
+      const k = p.toLowerCase();
+      if (!p || seen.has(k)) return false;
+      seen.add(k); return true;
+    });
+    return final.join(', ') + '.';
+  }
+
+  /* ---------- bancos para variaciones ---------- */
+  const BANK = {
+    poses: ['waving hello cheerfully', 'sitting happily with legs crossed', 'walking forward with a joyful step', 'leaning forward with curiosity', 'jumping with joy', 'peeking out shyly from behind an object', 'stretching arms up happily', 'looking over the shoulder with a sweet smile', 'twirling playfully', 'kneeling down to look at something small'],
+    decor: ['with small flowers and leaves scattered around', 'with tiny stars and sparkles floating in the air', 'framed by curling vines and little blossoms', 'with small hearts dotting the background', 'with fluffy clouds and a smiling sun above', 'with a bunting garland hanging above', 'with little butterflies fluttering nearby', 'with swirling ribbons and bows', 'with tiny mushrooms and pebbles on the ground', 'with round bubbles floating around'],
+    angles: ['wide view that shows more of the setting', 'slightly closer framing on the character', 'centered symmetrical arrangement', 'gentle diagonal layout that suggests movement', 'layered depth with foreground, middle ground and background'],
+    secondary: ['a tiny companion bird', 'a small potted plant', 'a stack of books', 'a little woven basket', 'a steaming teacup', 'a small lantern', 'a tiny snail friend', 'a sleepy kitten', 'a bouquet of flowers', 'a small gift box'],
+    story: ['capturing a sweet everyday moment', 'as if a small happy surprise just happened', 'sharing the moment with a tiny friend', 'in the middle of a cheerful little adventure', 'during a calm peaceful pause']
+  };
+
+  function variationOpts(state, i, sets) {
+    const t = theme(state.theme);
+    const hasSubject = !!subjectPhrase(state);
+    const pat = state.comp === 'pattern';
+    return {
+      pose: hasSubject && !pat ? sets.poses[i % sets.poses.length] : '',
+      decor: sets.decor[i % sets.decor.length],
+      secondary: sets.secondary[i % sets.secondary.length],
+      angle: pat ? '' : sets.angles[i % sets.angles.length],
+      story: hasSubject && !pat ? sets.story[i % sets.story.length] : ''
+    };
+    // t se usa en sets.secondary (props del tema)
+  }
+
+  function makeSets(state) {
+    const t = theme(state.theme);
+    const props = t ? t.props.slice(1) : [];
+    return {
+      poses: shuffle(BANK.poses), decor: shuffle(BANK.decor), angles: shuffle(BANK.angles),
+      secondary: shuffle(props).concat(shuffle(BANK.secondary)), story: shuffle(BANK.story)
+    };
+  }
+
+  function variations(state, n) {
+    const sets = makeSets(state);
+    const out = [];
+    for (let i = 0; i < (n || 5); i++) out.push(buildPrompt(state, variationOpts(state, i, sets)));
+    return out;
+  }
+
+  function oneVariation(state) { return variations(state, 1)[0]; }
+
+  /* ---------- Surprise Me ---------- */
+  let lastSurprise = -1;
+  function surprise() {
+    let idx;
+    do { idx = Math.floor(Math.random() * D.surprises.length); } while (idx === lastSurprise && D.surprises.length > 1);
+    lastSurprise = idx;
+    const s = D.surprises[idx];
+    return {
+      style: s.style, count: '1', chars: s.chars.slice(), outfit: s.outfit || null,
+      theme: s.theme, activity: s.activity || null, comp: s.comp,
+      level: s.level, audience: s.audience,
+      details: s.chars.some(id => { const c = byId(D.characters, id); return c && c.k !== 'object'; }) ? ['eyes', 'smile', 'fullBody'] : ['smile']
+    };
+  }
+
+  /* ---------- Modo libro ---------- */
+  function buildBook(book, base) {
+    const world = byId(B.worlds, book.world);
+    if (!world) return [];
+    const N = book.pages || 20;
+    const ending = B.genericScenes[B.genericScenes.length - 1];
+    const generics = shuffle(B.genericScenes.slice(0, -1));
+    const wScenes = world.scenes.slice(1);
+    const middle = [];
+    let wi = 0, gi = 0, step = 0;
+    while (middle.length < N - 2 && (wi < wScenes.length || gi < generics.length)) {
+      const takeWorld = (step % 3 !== 2 && wi < wScenes.length) || gi >= generics.length;
+      middle.push(takeWorld ? wScenes[wi++] : generics[gi++]);
+      step++;
+    }
+    const seq = [world.scenes[0]].concat(middle, [ending]).slice(0, N);
+    const st = Object.assign({}, base, {
+      style: book.style, audience: book.audience, level: book.level,
+      count: '1', chars: book.char ? [book.char] : [], customChar: book.customChar,
+      activity: null, theme: null, comp: 'charEnv', compExtras: [], custom: ''
+    });
+    return seq.map((sc, i) => ({
+      n: i + 1, en: sc[0], es: sc[1],
+      prompt: buildPrompt(st, { scene: sc[2].replace('{place}', world.place), series: true })
+    }));
+  }
+
+  function aspect(state) { const f = byId(D.formats, state.format); return f ? f.ar : ''; }
+
+  window.CBG_ENGINE = { buildPrompt, variations, oneVariation, surprise, buildBook, aspect, safeLevel, byId };
+})();
+
+</script>
+  <script>
+/* =========================================================
+   Coloring Book Prompt Generator — APP / UI
+   ========================================================= */
+(function () {
+  const D = window.CBG_DATA, B = window.CBG_BOOK, E = window.CBG_ENGINE;
+  const $ = id => document.getElementById(id);
+
+  /* ---------- textos ES / EN ---------- */
+  const I18N = {
+    es: {
+      subtitle: 'Crea prompts únicos para páginas de colorear listas para imprimir, en segundos.',
+      createBook: '📚 Crear libro para colorear', surprise: '✨ Sorpréndeme', surpriseShort: '✨ Sorpresa', resetAll: 'Reiniciar todo',
+      s1t: 'Estilo visual', s1s: 'Elige la estética artística de tu página.',
+      s2t: 'Personaje / sujeto', s2s: '¿Quién o qué es el protagonista?',
+      count: 'Número de personajes', charLabel: 'Personaje',
+      customCharL: 'Describe tu personaje', customCharP: 'Ej: adorable red panda with a tiny backpack',
+      englishTip: 'Tip: escríbelo en inglés para que la IA lo entienda mejor.',
+      s3t: 'Vestuario y apariencia', s3s: '¿Qué lleva puesto tu personaje?',
+      outfitLabel: 'Vestuario', detailsLabel: 'Detalles del personaje',
+      customOutfitL: 'Describe el vestuario', customOutfitP: 'Ej: cute superhero costume with cape, boots, mask and emblem',
+      s4t: 'Tema', s4s: 'Elige el mundo o concepto de tu página.',
+      s5t: '¿Qué está haciendo?', s5s: 'La acción le da vida a la escena.',
+      customActL: 'Describe la actividad', customActP: 'Ej: flying a paper airplane',
+      s6t: 'Composición', s6s: 'Elige cómo se organiza la escena.',
+      layoutLabel: 'Distribución', extrasLabel: 'Elementos extra',
+      s7t: 'Nivel para colorear', s7s: 'Qué tan sencillo o detallado será el dibujo.',
+      s8t: 'Audiencia', s8s: '¿Para quién es esta página?',
+      s9t: 'Formato de página', s9s: 'El tamaño de tu página o de tu libro.',
+      sizeLabel: 'Tamaño', placeLabel: 'Ubicación en la página',
+      s10t: 'Estilo de impresión', s10s: 'Todo viene activado para que la página salga perfecta para imprimir.',
+      s11t: 'Instrucciones personalizadas', s11s: 'Agrega cualquier otra cosa que quieras que la IA incluya.',
+      customP: 'Ej: add flowers around the character, include a small teacup and make the character look happy.',
+      resultTitle: '✨ Tu prompt para colorear', livePreview: 'Vista previa en vivo',
+      generate: 'Generar prompt', copy: 'Copiar prompt', again: 'Generar otra vez', vars: '5 variaciones', save: 'Guardar', clear: 'Limpiar',
+      varsTitle: '5 variaciones', recent: 'Prompts recientes', histEmpty: 'Tus prompts generados aparecerán aquí.',
+      bookTitle: '📚 Crear libro para colorear',
+      bookIntro: 'El mismo personaje, el mismo estilo y el mismo mundo en todas las páginas, cada una con su prompt listo para copiar.',
+      bookWorld: 'Tema del libro', bookChar: 'Personaje principal', bookPages: 'Número de páginas',
+      bookUses: 'Se usan también el vestuario, los detalles, el formato y el estilo de impresión que elegiste en el generador.',
+      buildBook: 'Crear páginas', copyAll: 'Copiar todas', page: 'PÁGINA',
+      choose: 'Elige una opción', chooseMany: 'Elige una o varias', search: 'Buscar…', clearSel: 'Limpiar selección',
+      selectedN: '{n} seleccionados', maxN: 'Puedes elegir hasta {n}.', noResults: 'Sin resultados', single: 'Una sola opción',
+      one: '👤 1 personaje', two: '👥 2 personajes', group: '👨‍👩‍👧 Grupo',
+      copied: 'Prompt copiado ✨', saved: 'Prompt guardado ⭐', nothing: 'Primero elige algunas opciones.',
+      kidsNote: 'Para niños conviene algo más sencillo: cambié el nivel a Fácil.',
+      resetDone: 'Todo reiniciado', surpriseDone: 'Combinación sorpresa lista ✨',
+      bookNeed: 'Elige el tema del libro y el personaje principal.', bookCopied: 'Todas las páginas copiadas ✨',
+      aspect: '📐 En tu generador de imágenes elige la proporción {ar}.',
+      emptyPrompt: 'Elige tus opciones y aquí irá apareciendo tu prompt…',
+      view: 'Ver', del: 'Borrar', cleared: 'Resultado limpio', copyOne: 'Copiar', recShort: 'Recomendado', recFor: 'Recomendado para', mascotSay: '¡Elige tus opciones y yo armo tu prompt!', mascotDone: '¡Listo! ✨'
+    },
+    en: {
+      subtitle: 'Create unique, print-ready coloring page prompts in seconds.',
+      createBook: '📚 Create Coloring Book', surprise: '✨ Surprise Me', surpriseShort: '✨ Surprise', resetAll: 'Reset all',
+      s1t: 'Visual Style', s1s: 'Choose the artistic aesthetic for your coloring page.',
+      s2t: 'Character / Subject', s2s: 'Who or what is the main subject?',
+      count: 'Number of characters', charLabel: 'Character',
+      customCharL: 'Describe your custom character', customCharP: 'Example: adorable red panda with a tiny backpack',
+      englishTip: 'Tip: write it in English for the best results.',
+      s3t: 'Outfit & Appearance', s3s: 'Choose what your character is wearing.',
+      outfitLabel: 'Outfit', detailsLabel: 'Character details',
+      customOutfitL: 'Describe the outfit', customOutfitP: 'Example: cute superhero costume with cape, boots, mask and emblem',
+      s4t: 'Theme', s4s: 'Choose the world or concept of your coloring page.',
+      s5t: 'What are they doing?', s5s: 'The action brings the scene to life.',
+      customActL: 'Describe the activity', customActP: 'Example: flying a paper airplane',
+      s6t: 'Composition', s6s: 'Choose how the scene is arranged.',
+      layoutLabel: 'Layout', extrasLabel: 'Extra elements',
+      s7t: 'Coloring Level', s7s: 'How simple or detailed the drawing will be.',
+      s8t: 'Audience', s8s: 'Who is this page for?',
+      s9t: 'Page Format', s9s: 'The size of your page or book.',
+      sizeLabel: 'Size', placeLabel: 'Placement on the page',
+      s10t: 'Print Style', s10s: 'Everything is on by default for a perfect printable page.',
+      s11t: 'Custom Instructions', s11s: 'Add anything else you want the AI to include.',
+      customP: 'Example: add flowers around the character, include a small teacup and make the character look happy.',
+      resultTitle: '✨ Your Coloring Prompt', livePreview: 'Live preview',
+      generate: 'Generate prompt', copy: 'Copy prompt', again: 'Generate again', vars: '5 variations', save: 'Save prompt', clear: 'Clear',
+      varsTitle: '5 variations', recent: 'Recent prompts', histEmpty: 'Your generated prompts will appear here.',
+      bookTitle: '📚 Create a Coloring Book',
+      bookIntro: 'The same character, style and world on every page, each one with a prompt ready to copy.',
+      bookWorld: 'Book theme', bookChar: 'Main character', bookPages: 'Number of pages',
+      bookUses: 'It also uses the outfit, details, format and print style you chose in the generator.',
+      buildBook: 'Create pages', copyAll: 'Copy all', page: 'PAGE',
+      choose: 'Choose an option', chooseMany: 'Choose one or more', search: 'Search…', clearSel: 'Clear selection',
+      selectedN: '{n} selected', maxN: 'You can choose up to {n}.', noResults: 'No results', single: 'One option only',
+      one: '👤 1 Character', two: '👥 2 Characters', group: '👨‍👩‍👧 Group',
+      copied: 'Prompt copied! ✨', saved: 'Prompt saved ⭐', nothing: 'Choose some options first.',
+      kidsNote: 'Simpler is better for kids: the level was changed to Easy.',
+      resetDone: 'Everything reset', surpriseDone: 'Surprise combo ready ✨',
+      bookNeed: 'Choose the book theme and the main character.', bookCopied: 'All pages copied! ✨',
+      aspect: '📐 In your image generator, choose aspect ratio {ar}.',
+      emptyPrompt: 'Pick your options and your prompt will appear here…',
+      view: 'View', del: 'Delete', cleared: 'Result cleared', copyOne: 'Copy', recShort: 'Recommended', recFor: 'Recommended for', mascotSay: 'Pick your options and I’ll build your prompt!', mascotDone: 'Ready! ✨'
+    }
+  };
+
+  /* ---------- almacenamiento seguro ---------- */
+  const store = {
+    get(k, fb) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : fb; } catch (e) { return fb; } },
+    set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) { /* sin almacenamiento: sigue funcionando */ } }
+  };
+
+  let lang = store.get('cbg_lang', 'es');
+  const t = k => (I18N[lang] && I18N[lang][k]) || I18N.en[k] || k;
+  const L = o => (o ? o[lang] || o.en : '');
+
+  /* ---------- estado ---------- */
+  const fresh = () => ({
+    style: null, count: '1', chars: [], customChar: '', outfit: null, customOutfit: '',
+    details: [], theme: null, activity: null, customActivity: '', comp: null, compExtras: [],
+    level: null, audience: null, format: null, layout: null, print: D.print.map(p => p.id), custom: ''
+  });
+  let state = fresh();
+  const book = { world: null, pages: 20, char: null, customChar: '', style: null, audience: null, level: null };
+  let current = '';      // prompt mostrado
+  let manual = false;    // true cuando el resultado viene de "otra vez" o historial
+  let bookPages = [];
+
+  /* ---------- toast ---------- */
+  let toastTimer;
+  function toast(msg) {
+    const el = $('toast'); el.textContent = msg; el.classList.add('show');
+    clearTimeout(toastTimer); toastTimer = setTimeout(() => el.classList.remove('show'), 2200);
+  }
+
+  /* ---------- regla niños ---------- */
+  function checkKids(obj) {
+    if (obj.audience === 'kids' && ['detailed', 'intricate'].includes(obj.level)) { obj.level = 'easy'; toast(t('kidsNote')); }
+  }
+
+  /* =========================================================
+     DESPLEGABLE CON CASILLAS
+     cfg: options() | groups(), get(), set(ids), max(), search, multiPh
+     ========================================================= */
+  const dropdowns = [];
+  function makeDD(id, cfg) {
+    const root = $(id);
+    root.innerHTML =
+      '<button type="button" class="dd-trigger" aria-haspopup="listbox" aria-expanded="false"><span class="dd-value"></span>' +
+      '<svg class="dd-caret" viewBox="0 0 20 20" aria-hidden="true"><path d="M5 8l5 5 5-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>' +
+      '<div class="dd-panel">' + (cfg.search ? '<input class="dd-search" type="search" autocomplete="off">' : '') +
+      '<div class="dd-list" role="listbox"></div><div class="dd-foot"><span class="dd-count"></span><button type="button" class="dd-clear"></button></div></div>';
+    const trig = root.querySelector('.dd-trigger');
+    const list = root.querySelector('.dd-list');
+    const search = root.querySelector('.dd-search');
+    let q = '';
+
+    const flat = () => cfg.groups ? cfg.groups().flatMap(g => g.items) : cfg.options();
+    const match = o => !q || (o.es + ' ' + o.en).toLowerCase().includes(q);
+
+    function optHTML(o, sel, max) {
+      const on = sel.includes(o.id);
+      const off = !on && max > 1 && sel.length >= max;
+      return '<div class="dd-opt' + (on ? ' on' : '') + (off ? ' off' : '') + '" role="option" tabindex="0" aria-selected="' + on + '" data-id="' + o.id + '">' +
+        '<span class="box" aria-hidden="true"></span>' + (o.i ? '<span class="dd-ico" aria-hidden="true">' + o.i + '</span>' : '') +
+        '<span class="dd-txt"><span>' + L(o) + '</span>' + (o.age ? '<span class="dd-sub">' + t('recShort') + ': ' + L(o.age) + '</span>' : '') + '</span></div>';
+    }
+
+    function renderList() {
+      const sel = cfg.get(), max = cfg.max ? cfg.max() : 1;
+      let html = '';
+      if (cfg.groups) {
+        cfg.groups().forEach(g => {
+          const items = g.items.filter(match);
+          if (items.length) html += '<div class="dd-group">' + (g.i ? g.i + ' ' : '') + L(g) + '</div>' + items.map(o => optHTML(o, sel, max)).join('');
+        });
+      } else html = cfg.options().filter(match).map(o => optHTML(o, sel, max)).join('');
+      list.innerHTML = html || '<div class="dd-none">' + t('noResults') + '</div>';
+      root.querySelector('.dd-count').textContent = max > 1 ? t('selectedN').replace('{n}', sel.length) + ' / ' + max : t('single');
+      root.querySelector('.dd-clear').textContent = t('clearSel');
+      if (search) search.placeholder = t('search');
+    }
+
+    function renderTrigger() {
+      const sel = cfg.get(), all = flat();
+      const val = root.querySelector('.dd-value');
+      if (!sel.length) {
+        const max = cfg.max ? cfg.max() : 1;
+        val.innerHTML = '<span class="dd-ph">' + (max > 1 ? t('chooseMany') : t('choose')) + '</span>';
+      } else {
+        val.innerHTML = sel.map(id => { const o = all.find(x => x.id === id); return o ? '<span class="chip">' + (o.i ? o.i + ' ' : '') + L(o) + '</span>' : ''; }).join('');
+      }
+    }
+
+    function open() { closeAll(root); root.classList.add('open'); trig.setAttribute('aria-expanded', 'true'); q = ''; if (search) { search.value = ''; } renderList(); if (search && window.matchMedia('(min-width: 641px)').matches) search.focus(); }
+    function close() { root.classList.remove('open'); trig.setAttribute('aria-expanded', 'false'); }
+
+    function toggle(id) {
+      const max = cfg.max ? cfg.max() : 1;
+      let sel = cfg.get().slice();
+      if (max === 1) {
+        sel = sel[0] === id ? [] : [id];
+        cfg.set(sel); close(); trig.focus();
+      } else {
+        if (sel.includes(id)) sel = sel.filter(x => x !== id);
+        else { if (sel.length >= max) { toast(t('maxN').replace('{n}', max)); return; } sel.push(id); }
+        cfg.set(sel); renderList();
+      }
+      update();
+    }
+
+    trig.addEventListener('click', () => root.classList.contains('open') ? close() : open());
+    // el panel se redibuja al marcar; evitamos que ese clic lo cierre
+    root.querySelector('.dd-panel').addEventListener('click', e => e.stopPropagation());
+    list.addEventListener('click', e => { const o = e.target.closest('.dd-opt'); if (o) toggle(o.dataset.id); });
+    list.addEventListener('keydown', e => {
+      const o = e.target.closest('.dd-opt'); if (!o) return;
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(o.dataset.id); }
+      if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+        e.preventDefault();
+        const all = [...list.querySelectorAll('.dd-opt')], i = all.indexOf(o);
+        const next = e.key === 'ArrowDown' ? all[i + 1] : (all[i - 1] || search || trig);
+        if (next) next.focus();
+      }
+    });
+    root.addEventListener('keydown', e => { if (e.key === 'Escape') { close(); trig.focus(); } });
+    if (search) {
+      search.addEventListener('input', () => { q = search.value.trim().toLowerCase(); renderList(); });
+      search.addEventListener('keydown', e => { if (e.key === 'ArrowDown') { e.preventDefault(); const f = list.querySelector('.dd-opt'); if (f) f.focus(); } });
+    }
+    root.querySelector('.dd-clear').addEventListener('click', () => { cfg.set([]); renderList(); update(); });
+
+    const api = { root, render() { renderTrigger(); if (root.classList.contains('open')) renderList(); }, close };
+    dropdowns.push(api);
+    return api;
+  }
+  function closeAll(except) { dropdowns.forEach(d => { if (d.root !== except) d.close(); }); }
+  document.addEventListener('click', e => { if (!e.target.closest('.dd')) closeAll(null); });
+
+  /* helpers: S = una sola opción, M = varias */
+  const S = key => ({ get: () => (state[key] ? [state[key]] : []), set: ids => { state[key] = ids[0] || null; } });
+  const M = key => ({ get: () => state[key], set: ids => { state[key] = ids; } });
+  const maxChars = () => (state.count === '2' ? 2 : state.count === 'group' ? 3 : 1);
+
+  /* ---------- crear desplegables del generador ---------- */
+  makeDD('dd-style', Object.assign({ options: () => D.styles }, S('style')));
+  makeDD('dd-chars', Object.assign({ options: () => D.characters, search: true, max: maxChars }, M('chars')));
+  makeDD('dd-outfit', Object.assign({ options: () => D.outfits, search: true }, S('outfit')));
+  makeDD('dd-details', {
+    options: () => D.details, max: () => 6, get: () => state.details,
+    set: ids => {
+      // una sola pose a la vez
+      const added = ids.find(id => !state.details.includes(id));
+      const addedPose = added && (D.details.find(d => d.id === added) || {}).g === 'pose';
+      state.details = addedPose ? ids.filter(id => id === added || (D.details.find(d => d.id === id) || {}).g !== 'pose') : ids;
+    }
+  });
+  makeDD('dd-theme', Object.assign({ groups: () => D.themeGroups, search: true }, S('theme')));
+  makeDD('dd-activity', Object.assign({ options: () => D.activities, search: true }, S('activity')));
+  makeDD('dd-comp', Object.assign({ options: () => D.compositions }, S('comp')));
+  makeDD('dd-compExtras', Object.assign({ options: () => D.compExtras, max: () => 4 }, M('compExtras')));
+  makeDD('dd-level', { options: () => D.levels, get: () => (state.level ? [state.level] : []), set: ids => { state.level = ids[0] || null; checkKids(state); } });
+  makeDD('dd-audience', { options: () => D.audiences, get: () => (state.audience ? [state.audience] : []), set: ids => { state.audience = ids[0] || null; checkKids(state); } });
+  makeDD('dd-format', Object.assign({ options: () => D.formats }, S('format')));
+  makeDD('dd-layout', Object.assign({ options: () => D.layouts }, S('layout')));
+
+  /* ---------- desplegables del modo libro ---------- */
+  const BS = key => ({ get: () => (book[key] ? [book[key]] : []), set: ids => { book[key] = ids[0] || null; } });
+  makeDD('dd-bWorld', Object.assign({ options: () => B.worlds }, BS('world')));
+  makeDD('dd-bChar', Object.assign({ options: () => D.characters, search: true }, BS('char')));
+  makeDD('dd-bStyle', Object.assign({ options: () => D.styles }, BS('style')));
+  makeDD('dd-bAudience', { options: () => D.audiences, get: () => (book.audience ? [book.audience] : []), set: ids => { book.audience = ids[0] || null; checkKids(book); } });
+  makeDD('dd-bLevel', { options: () => D.levels, get: () => (book.level ? [book.level] : []), set: ids => { book.level = ids[0] || null; checkKids(book); } });
+
+  /* ---------- botones segmentados ---------- */
+  function renderSeg(id, items, getV, setV) {
+    const el = $(id);
+    el.innerHTML = items.map(([v, label]) => '<button type="button" role="radio" aria-checked="' + (getV() === v) + '" data-v="' + v + '">' + label + '</button>').join('');
+    el.onclick = e => { const b = e.target.closest('button'); if (!b) return; setV(b.dataset.v); renderSeg(id, items, getV, setV); update(); };
+  }
+  function renderCount() {
+    renderSeg('seg-count', [['1', t('one')], ['2', t('two')], ['group', t('group')]], () => state.count, v => {
+      state.count = v;
+      const max = maxChars();
+      if (state.chars.length > max) state.chars = state.chars.slice(0, max);
+    });
+  }
+  function renderPages() {
+    renderSeg('seg-pages', [10, 20, 30, 40, 50].map(n => [String(n), String(n)]), () => String(book.pages), v => { book.pages = Number(v); });
+  }
+
+  /* ---------- casillas de impresión ---------- */
+  function renderPrint() {
+    $('print-list').innerHTML = D.print.map(p => {
+      const on = state.print.includes(p.id);
+      return '<label class="check' + (on ? ' on' : '') + '"><input type="checkbox" data-id="' + p.id + '"' + (on ? ' checked' : '') + '><span class="box" aria-hidden="true"></span><span>' + L(p) + '</span></label>';
+    }).join('');
+  }
+  $('print-list').addEventListener('change', e => {
+    const id = e.target.dataset.id; if (!id) return;
+    state.print = e.target.checked ? state.print.concat(id) : state.print.filter(x => x !== id);
+    renderPrint(); update();
+  });
+
+  /* ---------- campos de texto ---------- */
+  ['customChar', 'customOutfit', 'customActivity', 'custom'].forEach(id => {
+    $(id).addEventListener('input', e => { state[id] = e.target.value; update(); });
+  });
+  $('bCustomChar').addEventListener('input', e => { book.customChar = e.target.value; });
+
+  /* =========================================================
+     ACTUALIZAR VISTA
+     ========================================================= */
+  function hasContent() { return !!(state.style || state.chars.length || state.theme || state.activity); }
+
+  function update() {
+    $('wrap-customChar').classList.toggle('show', state.chars.includes('custom'));
+    $('wrap-customOutfit').classList.toggle('show', state.outfit === 'custom');
+    $('wrap-customActivity').classList.toggle('show', state.activity === 'custom');
+    $('wrap-bCustom').classList.toggle('show', book.char === 'custom');
+
+    const done = {
+      style: !!state.style, chars: state.chars.length > 0, outfit: !!state.outfit || state.details.length > 0,
+      theme: !!state.theme, activity: !!state.activity, comp: !!state.comp || state.compExtras.length > 0,
+      level: !!state.level, audience: !!state.audience, format: !!state.format || !!state.layout,
+      print: state.print.length > 0, custom: !!state.custom.trim()
+    };
+    document.querySelectorAll('.step').forEach(s => s.classList.toggle('done', !!done[s.dataset.step]));
+
+    dropdowns.forEach(d => d.render());
+    showRec('rec-level', state.level);
+    showRec('rec-bLevel', book.level);
+    manual = false;
+    showPrompt(hasContent() ? E.buildPrompt(state) : '');
+  }
+
+  function showRec(id, levelId) {
+    const lv = D.levels.find(x => x.id === levelId);
+    $(id).hidden = !lv;
+    if (lv) $(id).textContent = '💡 ' + t('recFor') + ': ' + L(lv.age);
+  }
+
+  /* confeti de corazones y estrellas */
+  const calm = window.matchMedia('(prefers-reduced-motion: reduce)');
+  function burst(el) {
+    if (!el || calm.matches) return;
+    const r = el.getBoundingClientRect();
+    if (!r.width) return;
+    const cx = r.left + r.width / 2, cy = r.top + r.height / 2;
+    const shapes = ['♥', '★', '✦', '♥', '✿'], colors = ['#EC4899', '#9B87D6', '#3FAF84', '#F08A55', '#F472B6'];
+    for (let i = 0; i < 14; i++) {
+      const s = document.createElement('span');
+      s.className = 'burst'; s.textContent = shapes[i % shapes.length];
+      s.style.left = cx + 'px'; s.style.top = cy + 'px'; s.style.color = colors[i % colors.length];
+      s.style.setProperty('--dx', (Math.random() * 180 - 90).toFixed(0) + 'px');
+      s.style.setProperty('--dy', (-30 - Math.random() * 90).toFixed(0) + 'px');
+      s.style.setProperty('--rot', (Math.random() * 120 - 60).toFixed(0) + 'deg');
+      document.body.appendChild(s);
+      setTimeout(() => s.remove(), 1000);
+    }
+  }
+  let saysTimer;
+  function hop() {
+    const m = $('mascot'); m.classList.remove('hop'); void m.offsetWidth; m.classList.add('hop', 'says');
+    clearTimeout(saysTimer); saysTimer = setTimeout(() => m.classList.remove('says'), 2600);
+  }
+
+  function showPrompt(text, flash) {
+    current = text;
+    $('sheet').classList.toggle('empty', !text);
+    const box = $('promptBox');
+    box.textContent = text || t('emptyPrompt');
+    box.style.color = text ? '' : 'var(--muted)';
+    if (flash) { box.classList.remove('flash'); void box.offsetWidth; box.classList.add('flash'); }
+    const ar = E.aspect(state);
+    $('aspectTip').hidden = !ar || !text;
+    if (ar) $('aspectTip').textContent = t('aspect').replace('{ar}', ar);
+  }
+
+  /* ---------- copiar ---------- */
+  function copyText(text, msg) {
+    if (!text) { toast(t('nothing')); return; }
+    const done = () => toast(msg || t('copied'));
+    if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(text).then(done, () => fallbackCopy(text, done));
+    else fallbackCopy(text, done);
+  }
+  function fallbackCopy(text, done) {
+    const ta = document.createElement('textarea'); ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.select();
+    try { document.execCommand('copy'); done(); } catch (e) { /* nada */ }
+    ta.remove();
+  }
+
+  /* =========================================================
+     HISTORIAL (localStorage)
+     ========================================================= */
+  let history = store.get('cbg_history', []);
+  function addHistory(text, star) {
+    if (!text) return;
+    const found = history.find(h => h.text === text);
+    if (found) { if (star) found.star = true; }
+    else history.unshift({ id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6), text, ts: Date.now(), star: !!star });
+    // máximo 30; los guardados (⭐) no se borran solos
+    while (history.length > 30) { const i = history.map(h => h.star).lastIndexOf(false); if (i === -1) break; history.splice(i, 1); }
+    store.set('cbg_history', history); renderHistory();
+  }
+  function renderHistory() {
+    $('histCount').textContent = history.length;
+    $('histEmpty').hidden = history.length > 0;
+    const fmt = ts => new Date(ts).toLocaleString(lang === 'es' ? 'es' : 'en', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+    $('histList').innerHTML = history.map(h =>
+      '<li class="hist-item" data-id="' + h.id + '"><div class="meta">' + (h.star ? '⭐ ' : '') + fmt(h.ts) + '</div>' +
+      '<div class="text">' + escapeHTML(h.text) + '</div>' +
+      '<button class="mini" data-act="view">' + t('view') + '</button><button class="mini" data-act="copy">' + t('copyOne') + '</button><button class="mini del" data-act="del">' + t('del') + '</button></li>'
+    ).join('');
+  }
+  $('histList').addEventListener('click', e => {
+    const b = e.target.closest('button'); if (!b) return;
+    const id = b.closest('.hist-item').dataset.id, h = history.find(x => x.id === id); if (!h) return;
+    if (b.dataset.act === 'view') { showPrompt(h.text, true); manual = true; $('sheet').scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+    if (b.dataset.act === 'copy') copyText(h.text);
+    if (b.dataset.act === 'del') { history = history.filter(x => x.id !== id); store.set('cbg_history', history); renderHistory(); }
+  });
+  const escapeHTML = s => s.replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+  /* =========================================================
+     ACCIONES
+     ========================================================= */
+  function generate(e) {
+    if (!hasContent()) { toast(t('nothing')); return; }
+    showPrompt(E.buildPrompt(state), true);
+    burst(e && e.currentTarget ? e.currentTarget : $('btnGenerate')); hop();
+    addHistory(current);
+    if (window.matchMedia('(max-width: 1000px)').matches) $('sheet').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+  $('btnGenerate').onclick = generate;
+  $('btnGenerateM').onclick = generate;
+
+  $('btnCopy').onclick = e => { if (current) burst(e.currentTarget); copyText(current); };
+  $('btnAgain').onclick = () => {
+    if (!hasContent()) { toast(t('nothing')); return; }
+    showPrompt(E.oneVariation(state), true); manual = true; addHistory(current); hop();
+  };
+  $('btnSave').onclick = () => { if (!current) { toast(t('nothing')); return; } addHistory(current, true); toast(t('saved')); };
+  $('btnClear').onclick = () => { showPrompt(''); $('varsPanel').hidden = true; toast(t('cleared')); };
+
+  let vars = [];
+  function renderVars() {
+    $('varList').innerHTML = vars.map((v, i) =>
+      '<li class="var-item"><strong>' + (i + 1) + '.</strong><p>' + escapeHTML(v) + '</p><button class="mini" data-i="' + i + '">' + t('copyOne') + '</button></li>').join('');
+  }
+  $('btnVars').onclick = () => {
+    if (!hasContent()) { toast(t('nothing')); return; }
+    vars = E.variations(state, 5); renderVars();
+    $('varsPanel').hidden = false; $('varsPanel').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  };
+  $('varList').addEventListener('click', e => { const b = e.target.closest('button'); if (b) { burst(b); copyText(vars[+b.dataset.i]); } });
+
+  function surprise(e) {
+    const s = E.surprise();
+    const keep = { print: state.print, format: state.format, layout: state.layout };
+    Object.assign(state, fresh(), s, keep);
+    ['customChar', 'customOutfit', 'customActivity', 'custom'].forEach(id => { $(id).value = ''; });
+    renderCount(); update(); generate({ currentTarget: e && e.currentTarget }); toast(t('surpriseDone'));
+  }
+  $('btnSurprise').onclick = surprise;
+  $('btnSurpriseM').onclick = surprise;
+
+  $('btnReset').onclick = () => {
+    Object.assign(state, fresh());
+    ['customChar', 'customOutfit', 'customActivity', 'custom'].forEach(id => { $(id).value = ''; });
+    $('varsPanel').hidden = true;
+    renderCount(); renderPrint(); update(); toast(t('resetDone'));
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  document.querySelectorAll('[data-close]').forEach(b => b.addEventListener('click', () => { $(b.dataset.close).hidden = true; }));
+
+  /* ---------- modo libro ---------- */
+  $('btnBook').onclick = () => {
+    if (!book.char && state.chars[0]) { book.char = state.chars[0]; book.customChar = state.customChar; $('bCustomChar').value = state.customChar; }
+    if (!book.style) book.style = state.style;
+    if (!book.audience) book.audience = state.audience;
+    if (!book.level) book.level = state.level;
+    $('bookModal').hidden = false; update();
+  };
+  $('bookModal').addEventListener('click', e => { if (e.target.id === 'bookModal') $('bookModal').hidden = true; });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape' && !$('bookModal').hidden && !document.querySelector('.dd.open')) $('bookModal').hidden = true; });
+
+  function renderBook() {
+    $('bookList').innerHTML = bookPages.map((p, i) =>
+      '<li class="book-item"><span class="pg">' + t('page') + ' ' + p.n + '</span> <strong>' + escapeHTML(lang === 'es' ? p.es : p.en) + '</strong>' +
+      '<p>' + escapeHTML(p.prompt) + '</p><button class="mini" data-i="' + i + '">' + t('copyOne') + '</button></li>').join('');
+    $('btnCopyBook').hidden = !bookPages.length;
+  }
+  $('btnBuildBook').onclick = () => {
+    if (!book.world || !book.char || (book.char === 'custom' && !book.customChar.trim())) { toast(t('bookNeed')); return; }
+    bookPages = E.buildBook(book, state); renderBook();
+  };
+  $('bookList').addEventListener('click', e => { const b = e.target.closest('button'); if (b) { burst(b); copyText(bookPages[+b.dataset.i].prompt); } });
+  $('btnCopyBook').onclick = e => { burst(e.currentTarget); copyText(bookPages.map(p => t('page') + ' ' + p.n + ' — ' + (lang === 'es' ? p.es : p.en) + '\n' + p.prompt).join('\n\n'), t('bookCopied')); };
+
+  /* ---------- idioma ---------- */
+  function applyLang() {
+    document.documentElement.lang = lang;
+    document.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = t(el.dataset.i18n); });
+    document.querySelectorAll('[data-i18n-ph]').forEach(el => { el.placeholder = t(el.dataset.i18nPh); });
+    document.querySelectorAll('.lang span').forEach(s => s.classList.toggle('on', s.dataset.l === lang));
+    renderCount(); renderPages(); renderPrint(); renderHistory();
+    if (vars.length) renderVars();
+    if (bookPages.length) renderBook();
+    if (manual) { const keep = current; update(); showPrompt(keep); manual = true; } else update();
+  }
+  $('btnLang').onclick = () => { lang = lang === 'es' ? 'en' : 'es'; store.set('cbg_lang', lang); applyLang(); };
+
+  applyLang();
+})();
+
+</script>
+</body>
+</html>
